@@ -1,0 +1,25 @@
+---
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import CatalogoGrid from '../../components/CatalogoGrid.astro';
+---
+<Base
+  titulo="Catálogo de repuestos | JBD Repuestos Escobar"
+  descripcion="Catálogo de repuestos automotor en Belén de Escobar. Filtrá por marca, categoría y stock. Consultá por WhatsApp."
+>
+  <Header />
+  <main class="cat-main">
+    <div class="cat-head">
+      <h1>Catálogo</h1>
+      <p class="cat-sub">Filtrá por marca, tipo o disponibilidad.</p>
+    </div>
+    <CatalogoGrid />
+  </main>
+  <Footer />
+</Base>
+<style>
+  .cat-main { max-width: 1180px; margin: 0 auto; padding: var(--esp-8) var(--esp-4) var(--esp-16); }
+  .cat-head h1 { margin: 0 0 var(--esp-2); font-size: var(--texto-display); }
+  .cat-sub { color: var(--color-texto-secundario); margin: 0 0 var(--esp-6); }
+</style>

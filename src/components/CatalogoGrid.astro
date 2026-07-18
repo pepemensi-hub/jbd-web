@@ -1,0 +1,130 @@
+---
+import ProductCard from './ProductCard.astro';
+import stock from '../data/stock.json';
+
+const productos = stock.productos;
+const marcas = [...new Set(productos.map(p => p.marca))].sort();
+const categorias = [
+  { id: 'filtros', label: 'Filtros' },
+  { id: 'correas', label: 'Correas' },
+  { id: 'frenos', label: 'Frenos' },
+  { id: 'encendido', label: 'Encendido' },
+  { id: 'suspension', label: 'Suspensión' },
+  { id: 'refrigeracion', label: 'Refrigeración' },
+  { id: 'electricidad', label: 'Electricidad' },
+];
+const catConProductos = categorias.filter(c => productos.some(p => p.categoria === c.id));
+---
+<div class="cat-buscador">
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+  <input type="search" id="q" placeholder="Buscar por nombre, marca, modelo o código…" autocomplete="off" />
+</div>
+
+<div class="cat-layout">
+  <aside class="cat-filtros">
+    <div class="filtro-grupo">
+      <h4>Categoría</h4>
+      <div class="chips" data-filtro="categoria">
+        <button class="chip activo" data-val="">Todas</button>
+        {catConProductos.map(c => <button class="chip" data-val={c.id}>{c.label}</button>)}
+      </div>
+    </div>
+    <div class="filtro-grupo">
+      <h4>Marca</h4>
+      <div class="chips" data-filtro="marca">
+        <button class="chip activo" data-val="">Todas</button>
+        {marcas.map(m => <button class="chip" data-val={m}>{m}</button>)}
+      </div>
+    </div>
+    <div class="filtro-grupo">
+      <h4>Disponibilidad</h4>
+      <div class="chips" data-filtro="estado">
+        <button class="chip activo" data-val="">Todas</button>
+        <button class="chip" data-val="disponible">En stock</button>
+        <button class="chip" data-val="pedido">A pedido</button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="cat-resultados">
+    <div class="cat-contador"><span id="contador">{productos.length}</span> resultados</div>
+    <div class="cat-grid" id="grid">
+      {productos.map(p => (
+        <div class="grid-item" data-marca={p.marca} data-categoria={p.categoria} data-estado={p.estado} data-buscar={`${p.nombre} ${p.marca} ${p.modelos.join(' ')} ${p.sku}`.toLowerCase()}>
+          <ProductCard sku={p.sku} nombre={p.nombre} marca={p.marca} modelos={p.modelos} precio={p.precio} estado={p.estado} />
+        </div>
+      ))}
+    </div>
+    <div class="cat-vacio" id="vacio" hidden>
+      <p>No encontramos repuestos con esos filtros.</p>
+      <p class="cat-vacio-sub">Probá con otra búsqueda o consultanos directamente.</p>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    const estado = { categoria: '', marca: '', estado: '', q: '' };
+    const grid = document.getElementById('grid');
+    const items = Array.from(grid.querySelectorAll('.grid-item'));
+    const contador = document.getElementById('contador');
+    const vacio = document.getElementById('vacio');
+    const input = document.getElementById('q');
+
+    function aplicar() {
+      let visibles = 0;
+      items.forEach(function (it) {
+        const okCat = !estado.categoria || it.dataset.categoria === estado.categoria;
+        const okMarca = !estado.marca || it.dataset.marca === estado.marca;
+        const okEstado = !estado.estado || it.dataset.estado === estado.estado;
+        const okQ = !estado.q || it.dataset.buscar.indexOf(estado.q) !== -1;
+        const mostrar = okCat && okMarca && okEstado && okQ;
+        it.style.display = mostrar ? '' : 'none';
+        if (mostrar) visibles++;
+      });
+      contador.textContent = visibles;
+      vacio.hidden = visibles !== 0;
+      grid.hidden = visibles === 0;
+    }
+
+    document.querySelectorAll('.chips').forEach(function (grupo) {
+      const tipo = grupo.dataset.filtro;
+      grupo.addEventListener('click', function (e) {
+        const chip = e.target.closest('.chip');
+        if (!chip) return;
+        grupo.querySelectorAll('.chip').forEach(c => c.classList.remove('activo'));
+        chip.classList.add('activo');
+        estado[tipo] = chip.dataset.val;
+        aplicar();
+      });
+    });
+
+    let t;
+    input.addEventListener('input', function () {
+      clearTimeout(t);
+      t = setTimeout(function () {
+        estado.q = input.value.trim().toLowerCase();
+        aplicar();
+      }, 120);
+    });
+  })();
+</script>
+
+<style>
+  .cat-buscador { display: flex; align-items: center; gap: 10px; background: var(--superficie-input); border: 1px solid var(--color-borde-fuerte); border-radius: var(--radio-md); padding: 0 14px; min-height: 52px; margin-bottom: var(--esp-6); color: var(--color-texto-terciario); }
+  .cat-buscador input { flex: 1; border: 0; outline: 0; background: transparent; font-family: var(--fuente-texto); font-size: var(--texto-cuerpo-lg); color: var(--color-texto-primario); min-width: 0; }
+  .cat-layout { display: grid; grid-template-columns: 240px 1fr; gap: var(--esp-8); align-items: start; }
+  .cat-filtros { position: sticky; top: var(--esp-4); display: flex; flex-direction: column; gap: var(--esp-6); }
+  .filtro-grupo h4 { font-family: var(--fuente-texto); font-size: var(--texto-xs); font-weight: var(--peso-bold); text-transform: uppercase; letter-spacing: var(--tracking-label); color: var(--color-texto-terciario); margin: 0 0 var(--esp-3); }
+  .chips { display: flex; flex-wrap: wrap; gap: var(--esp-2); }
+  .chip { font-family: var(--fuente-texto); font-size: var(--texto-sm); font-weight: var(--peso-medio); padding: 7px 14px; border-radius: var(--radio-pill); border: 1px solid var(--color-borde-fuerte); background: transparent; color: var(--color-texto-secundario); cursor: pointer; transition: all .12s; }
+  .chip:hover { border-color: var(--color-marca); color: var(--color-texto-primario); }
+  .chip.activo { background: var(--color-marca); border-color: var(--color-marca); color: var(--color-texto-sobre-marca); }
+  .cat-contador { font-size: var(--texto-sm); color: var(--color-texto-secundario); margin-bottom: var(--esp-4); }
+  .cat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--esp-5); }
+  .cat-vacio { text-align: center; padding: var(--esp-16) var(--esp-4); }
+  .cat-vacio-sub { color: var(--color-texto-secundario); font-size: var(--texto-sm); }
+  @media (max-width: 980px) { .cat-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 820px) { .cat-layout { grid-template-columns: 1fr; } .cat-filtros { position: static; } }
+  @media (max-width: 520px) { .cat-grid { grid-template-columns: 1fr; } }
+</style>

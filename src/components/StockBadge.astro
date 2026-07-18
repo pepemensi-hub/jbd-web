@@ -1,0 +1,29 @@
+---
+interface Props { estado?: 'disponible' | 'pedido' | 'agotado'; }
+const { estado = 'disponible' } = Astro.props;
+const ESTADOS = {
+  disponible: { label: 'En stock', color: 'var(--color-stock-disponible)', tinte: 'var(--color-stock-disponible-tinte)' },
+  pedido: { label: 'A pedido 24–72hs', color: 'var(--color-stock-pedido)', tinte: 'var(--color-stock-pedido-tinte)' },
+  agotado: { label: 'Sin stock', color: 'var(--color-stock-agotado)', tinte: 'var(--color-stock-agotado-tinte)' },
+};
+const e = ESTADOS[estado] || ESTADOS.disponible;
+const iconos = {
+  disponible: '<path d="M20 6 9 17l-5-5"/>',
+  pedido: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  agotado: '<circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/>',
+};
+---
+<span class="badge" style={`--c:${e.color};--t:${e.tinte};`}>
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={iconos[estado]} />
+  {e.label}
+</span>
+<style>
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px 4px 8px; border-radius: var(--radio-pill);
+    background: var(--t); border: 1px solid var(--c); color: var(--c);
+    font-family: var(--fuente-texto); font-size: var(--texto-xs);
+    font-weight: var(--peso-semibold); letter-spacing: var(--tracking-label);
+    text-transform: uppercase; line-height: 1; white-space: nowrap;
+  }
+</style>
