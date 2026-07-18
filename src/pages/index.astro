@@ -1,17 +1,15 @@
 ---
-
+import Base from '../layouts/Base.astro';
+import negocio from '../data/negocio.json';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Base
+  titulo="JBD Repuestos en Belén de Escobar | Autopartes"
+  descripcion="Casa de repuestos automotor en Belén de Escobar. Filtros, correas, baterías y más. Consultá por WhatsApp."
+>
+  <main style="max-width: 640px; margin: 3rem auto; font-family: system-ui; padding: 0 1rem;">
+    <h1>{negocio.nombre}</h1>
+    <p>{negocio.direccion.calle}, {negocio.direccion.localidad}</p>
+    <p>Prueba de layout. Acá va a ir el buscador de repuestos.</p>
+  </main>
+</Base>

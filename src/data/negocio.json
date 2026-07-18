@@ -1,0 +1,22 @@
+{
+  "nombre": "JBD Repuestos Escobar",
+  "razonSocial": "JBD Repuestos",
+  "telefono": "+54 9 3484 500555",
+  "whatsapp": "5493484500555",
+  "email": "contacto@jbdrespuestos.com",
+  "direccion": {
+    "calle": "Int. O. Larghi 1039",
+    "localidad": "Belén de Escobar",
+    "provincia": "Buenos Aires",
+    "cp": "B1625",
+    "pais": "AR"
+  },
+  "geo": { "lat": -34.354962, "lng": -58.797892 },
+  "horarios": [
+    { "dias": ["Mo","Tu","We","Th","Fr"], "abre": "08:30", "cierra": "18:00" },
+    { "dias": ["Sa"], "abre": "08:00", "cierra": "14:00" },
+    { "dias": ["Su"], "abre": "08:00", "cierra": "13:00" }
+  ],
+  "pagos": ["Efectivo", "Transferencia bancaria", "Mercado Pago", "Tarjetas"],
+  "zonas": ["Belén de Escobar","Garín","Maquinista Savio","Ing. Maschwitz","Matheu","Loma Verde","Pilar","Del Viso","Tigre"]
+}

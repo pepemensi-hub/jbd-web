@@ -1,0 +1,30 @@
+---
+import negocio from '../data/negocio.json';
+import SchemaLocalBusiness from '../components/SchemaLocalBusiness.astro';
+import '../styles/tokens.css';
+
+interface Props {
+  titulo: string;
+  descripcion: string;
+}
+
+const { titulo, descripcion } = Astro.props;
+---
+<!doctype html>
+<html lang="es-AR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{titulo}</title>
+    <meta name="description" content={descripcion} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={titulo} />
+    <meta property="og:description" content={descripcion} />
+    <meta property="og:locale" content="es_AR" />
+    <SchemaLocalBusiness />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

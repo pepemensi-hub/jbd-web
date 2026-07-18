@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap');
+
+:root {
+  --color-fondo-base:         #0D0D0F;
+  --color-superficie-elevada: #17171A;
+  --color-superficie-alta:    #212127;
+  --color-borde-sutil:        #2C2C31;
+  --color-borde-fuerte:       #3A3A41;
+  --color-overlay:            rgba(0,0,0,0.66);
+
+  --color-marca:         #E4181F;
+  --color-marca-hover:   #C1121A;
+  --color-marca-pressed: #A00E15;
+  --color-marca-desat:   #7A3438;
+  --color-marca-texto:   #FF5A60;
+  --color-marca-tinte:   rgba(228,24,31,0.14);
+
+  --color-texto-primario:    rgba(255,255,255,0.94);
+  --color-texto-secundario:  rgba(255,255,255,0.66);
+  --color-texto-terciario:   rgba(255,255,255,0.42);
+  --color-texto-sobre-marca: #FFFFFF;
+
+  --color-stock-disponible:       #22C55E;
+  --color-stock-disponible-tinte: rgba(34,197,94,0.15);
+  --color-stock-pedido:           #F5A524;
+  --color-stock-pedido-tinte:     rgba(245,165,36,0.15);
+  --color-stock-agotado:          #8A8A90;
+  --color-stock-agotado-tinte:    rgba(138,138,144,0.14);
+
+  --color-whatsapp:       #25D366;
+  --color-whatsapp-hover: #1EBE5A;
+  --color-whatsapp-texto: #0A0A0A;
+
+  --superficie-pagina: var(--color-fondo-base);
+  --superficie-card:   var(--color-superficie-elevada);
+  --superficie-input:  var(--color-superficie-elevada);
+  --borde-card:        var(--color-borde-sutil);
+  --texto-titulo:      var(--color-texto-primario);
+  --texto-cuerpo:      var(--color-texto-primario);
+  --texto-apoyo:       var(--color-texto-secundario);
+  --texto-precio:      var(--color-marca);
+  --link:              var(--color-marca-texto);
+  --foco-anillo:       var(--color-marca);
+
+  --fuente-display: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --fuente-texto:   "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --peso-regular: 400;
+  --peso-medio: 500;
+  --peso-semibold: 600;
+  --peso-bold: 700;
+  --peso-black: 800;
+
+  --texto-display: 40px;
+  --texto-h1: 30px;
+  --texto-h2: 24px;
+  --texto-h3: 20px;
+  --texto-cuerpo-lg: 18px;
+  --texto-cuerpo: 16px;
+  --texto-sm: 14px;
+  --texto-xs: 12px;
+
+  --interlinea-titulo: 1.1;
+  --interlinea-cuerpo: 1.6;
+  --tracking-titulo: -0.01em;
+  --tracking-label: 0.04em;
+
+  --esp-1: 4px;  --esp-2: 8px;  --esp-3: 12px; --esp-4: 16px;
+  --esp-5: 20px; --esp-6: 24px; --esp-8: 32px; --esp-10: 40px;
+  --esp-12: 48px; --esp-16: 64px;
+
+  --radio-sm: 4px;
+  --radio-md: 8px;
+  --radio-lg: 12px;
+  --radio-pill: 999px;
+
+  --sombra-card: 0 1px 2px rgba(0,0,0,0.5);
+  --sombra-elevada: 0 6px 20px rgba(0,0,0,0.55);
+
+  --foco-grosor: 2px;
+  --foco-offset: 2px;
+
+  --borde-fino: 1px solid var(--color-borde-sutil);
+  --borde-medio: 1px solid var(--color-borde-fuerte);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--superficie-pagina);
+  color: var(--texto-cuerpo);
+  font-family: var(--fuente-texto);
+  font-size: var(--texto-cuerpo);
+  line-height: var(--interlinea-cuerpo);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--fuente-display);
+  color: var(--texto-titulo);
+  line-height: var(--interlinea-titulo);
+  letter-spacing: var(--tracking-titulo);
+  margin: 0 0 var(--esp-4);
+}
+
+h1 { font-size: var(--texto-h1); font-weight: var(--peso-black); }
+h2 { font-size: var(--texto-h2); font-weight: var(--peso-bold); }
+h3 { font-size: var(--texto-h3); font-weight: var(--peso-bold); }
+
+p { margin: 0 0 var(--esp-4); }
+
+a { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+:focus-visible {
+  outline: var(--foco-grosor) solid var(--foco-anillo);
+  outline-offset: var(--foco-offset);
+}
+
+img { max-width: 100%; height: auto; display: block; }

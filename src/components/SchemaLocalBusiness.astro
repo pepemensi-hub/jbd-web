@@ -1,0 +1,36 @@
+---
+import negocio from '../data/negocio.json';
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "AutoPartsStore",
+  "name": negocio.nombre,
+  "image": "https://jbdrespuestos.com/img/og-image.jpg",
+  "@id": "https://jbdrespuestos.com/#negocio",
+  "url": "https://jbdrespuestos.com/",
+  "telephone": negocio.telefono,
+  "priceRange": "$$",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": negocio.direccion.calle,
+    "addressLocality": negocio.direccion.localidad,
+    "addressRegion": negocio.direccion.provincia,
+    "postalCode": negocio.direccion.cp,
+    "addressCountry": negocio.direccion.pais
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": negocio.geo.lat,
+    "longitude": negocio.geo.lng
+  },
+  "openingHoursSpecification": negocio.horarios.map(h => ({
+    "@type": "OpeningHoursSpecification",
+    "dayOfWeek": h.dias,
+    "opens": h.abre,
+    "closes": h.cierra
+  })),
+  "paymentAccepted": negocio.pagos.join(", "),
+  "areaServed": negocio.zonas.map(z => ({ "@type": "City", "name": z }))
+};
+---
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />
