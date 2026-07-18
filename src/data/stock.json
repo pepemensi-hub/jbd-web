@@ -1,107 +1,94 @@
 {
-  "_nota": "DATOS DE EJEMPLO. Se reemplazan por el sync del Google Sheet real de JBD.",
+  "_nota": "Generado por sync-stock.mjs desde Google Sheets. NO editar a mano.",
   "actualizado": "2026-07-18",
   "productos": [
     {
       "sku": "FIL-0001",
       "nombre": "Filtro de aceite",
-      "marca": "Fiat",
+      "marca": "Volkswagen",
       "modelos": [
-        "Cronos",
-        "Palio",
-        "Toro"
+        "Gol",
+        "Suran",
+        "Voyage"
       ],
       "categoria": "filtros",
-      "precio": 6000,
+      "precio": 9500,
       "estado": "disponible",
       "imagen": null
     },
     {
       "sku": "FIL-0002",
-      "nombre": "Filtro de aceite",
-      "marca": "Renault",
+      "nombre": "Filtro de aire",
+      "marca": "Ford",
       "modelos": [
-        "Clio",
-        "Sandero"
+        "Fiesta",
+        "Focus"
       ],
       "categoria": "filtros",
-      "precio": 11500,
+      "precio": 12500,
       "estado": "disponible",
       "imagen": null
     },
     {
       "sku": "FIL-0003",
-      "nombre": "Filtro de aire",
-      "marca": "Renault",
+      "nombre": "Filtro de combustible",
+      "marca": "Toyota",
       "modelos": [
-        "Clio",
-        "Kangoo"
+        "Hilux",
+        "Etios"
       ],
       "categoria": "filtros",
-      "precio": 6500,
+      "precio": 15000,
       "estado": "disponible",
       "imagen": null
     },
     {
       "sku": "FIL-0004",
-      "nombre": "Filtro de aire",
-      "marca": "Volkswagen",
+      "nombre": "Filtro de habitáculo",
+      "marca": "Chevrolet",
       "modelos": [
-        "Suran",
-        "Polo",
-        "Gol"
+        "Onix",
+        "Cruze"
       ],
       "categoria": "filtros",
-      "precio": 13500,
-      "estado": "disponible",
+      "precio": 11000,
+      "estado": "pedido",
       "imagen": null
     },
     {
       "sku": "FIL-0005",
-      "nombre": "Filtro de aire",
-      "marca": "Toyota",
+      "nombre": "Filtro de aceite",
+      "marca": "Renault",
       "modelos": [
-        "Yaris",
-        "Etios"
+        "Clio",
+        "Sandero",
+        "Kangoo"
       ],
       "categoria": "filtros",
-      "precio": 12000,
+      "precio": 8500,
       "estado": "disponible",
       "imagen": null
     },
     {
       "sku": "FIL-0006",
-      "nombre": "Filtro de combustible",
-      "marca": "Renault",
+      "nombre": "Filtro de aire",
+      "marca": "Fiat",
       "modelos": [
-        "Clio",
-        "Kangoo"
+        "Cronos",
+        "Palio"
       ],
       "categoria": "filtros",
-      "precio": 7500,
-      "estado": "pedido",
+      "precio": 10500,
+      "estado": "disponible",
       "imagen": null
     },
     {
       "sku": "FIL-0007",
       "nombre": "Filtro de combustible",
-      "marca": "Toyota",
+      "marca": "Peugeot",
       "modelos": [
-        "Etios",
-        "Hilux",
-        "Corolla"
-      ],
-      "categoria": "filtros",
-      "precio": 6000,
-      "estado": "pedido",
-      "imagen": null
-    },
-    {
-      "sku": "FIL-0008",
-      "nombre": "Filtro de habitáculo",
-      "marca": "Toyota",
-      "modelos": [
-        "Yaris"
+        "208",
+        "Partner"
       ],
       "categoria": "filtros",
       "precio": 14000,
@@ -109,821 +96,438 @@
       "imagen": null
     },
     {
-      "sku": "FIL-0009",
-      "nombre": "Filtro de habitáculo",
-      "marca": "Ford",
-      "modelos": [
-        "Focus",
-        "EcoSport",
-        "Falcon"
-      ],
-      "categoria": "filtros",
-      "precio": 6500,
-      "estado": "pedido",
-      "imagen": null
-    },
-    {
-      "sku": "FIL-0010",
-      "nombre": "Filtro de habitáculo",
-      "marca": "Volkswagen",
-      "modelos": [
-        "Polo",
-        "Vento"
-      ],
-      "categoria": "filtros",
-      "precio": 11500,
-      "estado": "disponible",
-      "imagen": null
-    },
-    {
-      "sku": "COR-0011",
-      "nombre": "Correa de distribución",
-      "marca": "Volkswagen",
-      "modelos": [
-        "Polo",
-        "Suran"
-      ],
-      "categoria": "correas",
-      "precio": 48500,
-      "estado": "disponible",
-      "imagen": null
-    },
-    {
-      "sku": "COR-0012",
-      "nombre": "Correa de distribución",
-      "marca": "Toyota",
-      "modelos": [
-        "Etios",
-        "Hilux",
-        "Yaris"
-      ],
-      "categoria": "correas",
-      "precio": 76000,
-      "estado": "disponible",
-      "imagen": null
-    },
-    {
-      "sku": "COR-0013",
+      "sku": "COR-0001",
       "nombre": "Kit de distribución",
-      "marca": "Volkswagen",
-      "modelos": [
-        "Polo",
-        "Vento"
-      ],
-      "categoria": "correas",
-      "precio": 13000,
-      "estado": "disponible",
-      "imagen": null
-    },
-    {
-      "sku": "COR-0014",
-      "nombre": "Kit de distribución",
-      "marca": "Peugeot",
-      "modelos": [
-        "206"
-      ],
-      "categoria": "correas",
-      "precio": 39500,
-      "estado": "disponible",
-      "imagen": null
-    },
-    {
-      "sku": "COR-0015",
-      "nombre": "Kit de distribución",
-      "marca": "Toyota",
-      "modelos": [
-        "Yaris",
-        "Hilux"
-      ],
-      "categoria": "correas",
-      "precio": 64500,
-      "estado": "disponible",
-      "imagen": null
-    },
-    {
-      "sku": "COR-0016",
-      "nombre": "Correa poly-v",
-      "marca": "Renault",
-      "modelos": [
-        "Kangoo"
-      ],
-      "categoria": "correas",
-      "precio": 39000,
-      "estado": "disponible",
-      "imagen": null
-    },
-    {
-      "sku": "COR-0017",
-      "nombre": "Correa poly-v",
-      "marca": "Toyota",
-      "modelos": [
-        "Yaris"
-      ],
-      "categoria": "correas",
-      "precio": 74500,
-      "estado": "pedido",
-      "imagen": null
-    },
-    {
-      "sku": "COR-0018",
-      "nombre": "Correa poly-v",
-      "marca": "Renault",
-      "modelos": [
-        "Duster",
-        "Sandero",
-        "Kangoo"
-      ],
-      "categoria": "correas",
-      "precio": 69000,
-      "estado": "pedido",
-      "imagen": null
-    },
-    {
-      "sku": "COR-0019",
-      "nombre": "Tensor de correa",
-      "marca": "Fiat",
-      "modelos": [
-        "Toro",
-        "Palio",
-        "Cronos"
-      ],
-      "categoria": "correas",
-      "precio": 39000,
-      "estado": "pedido",
-      "imagen": null
-    },
-    {
-      "sku": "COR-0020",
-      "nombre": "Tensor de correa",
-      "marca": "Volkswagen",
-      "modelos": [
-        "Suran",
-        "Polo"
-      ],
-      "categoria": "correas",
-      "precio": 31000,
-      "estado": "disponible",
-      "imagen": null
-    },
-    {
-      "sku": "COR-0021",
-      "nombre": "Tensor de correa",
-      "marca": "Ford",
-      "modelos": [
-        "Fiesta",
-        "Ranger",
-        "Focus"
-      ],
-      "categoria": "correas",
-      "precio": 43000,
-      "estado": "pedido",
-      "imagen": null
-    },
-    {
-      "sku": "FRE-0022",
-      "nombre": "Pastillas de freno delanteras",
-      "marca": "Peugeot",
-      "modelos": [
-        "208"
-      ],
-      "categoria": "frenos",
-      "precio": 41000,
-      "estado": "disponible",
-      "imagen": null
-    },
-    {
-      "sku": "FRE-0023",
-      "nombre": "Pastillas de freno delanteras",
-      "marca": "Renault",
-      "modelos": [
-        "Kangoo"
-      ],
-      "categoria": "frenos",
-      "precio": 34500,
-      "estado": "pedido",
-      "imagen": null
-    },
-    {
-      "sku": "FRE-0024",
-      "nombre": "Pastillas de freno delanteras",
-      "marca": "Toyota",
-      "modelos": [
-        "Etios",
-        "Yaris",
-        "Corolla"
-      ],
-      "categoria": "frenos",
-      "precio": 60000,
-      "estado": "disponible",
-      "imagen": null
-    },
-    {
-      "sku": "FRE-0025",
-      "nombre": "Pastillas de freno traseras",
-      "marca": "Ford",
-      "modelos": [
-        "Ranger",
-        "Focus",
-        "Fiesta"
-      ],
-      "categoria": "frenos",
-      "precio": null,
-      "estado": "agotado",
-      "imagen": null
-    },
-    {
-      "sku": "FRE-0026",
-      "nombre": "Pastillas de freno traseras",
-      "marca": "Chevrolet",
-      "modelos": [
-        "Corsa",
-        "Cruze"
-      ],
-      "categoria": "frenos",
-      "precio": 21500,
-      "estado": "pedido",
-      "imagen": null
-    },
-    {
-      "sku": "FRE-0027",
-      "nombre": "Pastillas de freno traseras",
       "marca": "Volkswagen",
       "modelos": [
         "Gol",
-        "Vento",
-        "Suran"
+        "Polo"
       ],
-      "categoria": "frenos",
-      "precio": 46000,
+      "categoria": "correas",
+      "precio": 62000,
       "estado": "disponible",
       "imagen": null
     },
     {
-      "sku": "FRE-0028",
-      "nombre": "Disco de freno",
-      "marca": "Renault",
+      "sku": "COR-0002",
+      "nombre": "Correa de distribución",
+      "marca": "Ford",
       "modelos": [
-        "Clio",
-        "Sandero"
+        "Focus",
+        "EcoSport"
       ],
-      "categoria": "frenos",
-      "precio": null,
-      "estado": "agotado",
+      "categoria": "correas",
+      "precio": 28000,
+      "estado": "disponible",
       "imagen": null
     },
     {
-      "sku": "FRE-0029",
-      "nombre": "Disco de freno",
+      "sku": "COR-0003",
+      "nombre": "Correa poly-v",
       "marca": "Toyota",
       "modelos": [
-        "Etios",
         "Corolla",
         "Yaris"
       ],
-      "categoria": "frenos",
-      "precio": 56000,
+      "categoria": "correas",
+      "precio": 18500,
+      "estado": "disponible",
+      "imagen": null
+    },
+    {
+      "sku": "COR-0004",
+      "nombre": "Kit de distribución",
+      "marca": "Renault",
+      "modelos": [
+        "Clio",
+        "Duster"
+      ],
+      "categoria": "correas",
+      "precio": 58000,
       "estado": "pedido",
       "imagen": null
     },
     {
-      "sku": "FRE-0030",
-      "nombre": "Cilindro de rueda",
-      "marca": "Ford",
+      "sku": "COR-0005",
+      "nombre": "Tensor de correa",
+      "marca": "Chevrolet",
       "modelos": [
-        "Fiesta",
-        "Focus",
-        "Ranger"
+        "Corsa",
+        "Onix"
       ],
-      "categoria": "frenos",
+      "categoria": "correas",
       "precio": 22000,
       "estado": "disponible",
       "imagen": null
     },
     {
-      "sku": "FRE-0031",
-      "nombre": "Cilindro de rueda",
-      "marca": "Peugeot",
-      "modelos": [
-        "206"
-      ],
-      "categoria": "frenos",
-      "precio": 42000,
-      "estado": "disponible",
-      "imagen": null
-    },
-    {
-      "sku": "FRE-0032",
-      "nombre": "Cilindro de rueda",
+      "sku": "COR-0006",
+      "nombre": "Correa poly-v",
       "marca": "Fiat",
       "modelos": [
         "Palio",
-        "Toro"
+        "Cronos"
       ],
-      "categoria": "frenos",
-      "precio": null,
-      "estado": "agotado",
-      "imagen": null
-    },
-    {
-      "sku": "ENC-0033",
-      "nombre": "Juego de bujías",
-      "marca": "Chevrolet",
-      "modelos": [
-        "Corsa",
-        "S10",
-        "Cruze"
-      ],
-      "categoria": "encendido",
-      "precio": 42000,
-      "estado": "disponible",
-      "imagen": null
-    },
-    {
-      "sku": "ENC-0034",
-      "nombre": "Juego de bujías",
-      "marca": "Peugeot",
-      "modelos": [
-        "208",
-        "Partner"
-      ],
-      "categoria": "encendido",
-      "precio": 44500,
-      "estado": "disponible",
-      "imagen": null
-    },
-    {
-      "sku": "ENC-0035",
-      "nombre": "Bobina de encendido",
-      "marca": "Peugeot",
-      "modelos": [
-        "208"
-      ],
-      "categoria": "encendido",
-      "precio": 38500,
-      "estado": "disponible",
-      "imagen": null
-    },
-    {
-      "sku": "ENC-0036",
-      "nombre": "Bobina de encendido",
-      "marca": "Peugeot",
-      "modelos": [
-        "208"
-      ],
-      "categoria": "encendido",
-      "precio": 31500,
-      "estado": "disponible",
-      "imagen": null
-    },
-    {
-      "sku": "ENC-0037",
-      "nombre": "Bobina de encendido",
-      "marca": "Peugeot",
-      "modelos": [
-        "208",
-        "206"
-      ],
-      "categoria": "encendido",
-      "precio": 26500,
-      "estado": "disponible",
-      "imagen": null
-    },
-    {
-      "sku": "ENC-0038",
-      "nombre": "Cable de bujía",
-      "marca": "Volkswagen",
-      "modelos": [
-        "Amarok",
-        "Gol",
-        "Polo"
-      ],
-      "categoria": "encendido",
-      "precio": 12500,
-      "estado": "pedido",
-      "imagen": null
-    },
-    {
-      "sku": "ENC-0039",
-      "nombre": "Cable de bujía",
-      "marca": "Volkswagen",
-      "modelos": [
-        "Suran"
-      ],
-      "categoria": "encendido",
-      "precio": 19500,
-      "estado": "disponible",
-      "imagen": null
-    },
-    {
-      "sku": "ENC-0040",
-      "nombre": "Cable de bujía",
-      "marca": "Volkswagen",
-      "modelos": [
-        "Amarok"
-      ],
-      "categoria": "encendido",
-      "precio": 30500,
-      "estado": "pedido",
-      "imagen": null
-    },
-    {
-      "sku": "SUS-0041",
-      "nombre": "Amortiguador delantero",
-      "marca": "Ford",
-      "modelos": [
-        "Falcon"
-      ],
-      "categoria": "suspension",
-      "precio": 34000,
-      "estado": "disponible",
-      "imagen": null
-    },
-    {
-      "sku": "SUS-0042",
-      "nombre": "Amortiguador delantero",
-      "marca": "Volkswagen",
-      "modelos": [
-        "Polo",
-        "Vento"
-      ],
-      "categoria": "suspension",
-      "precio": 94000,
-      "estado": "disponible",
-      "imagen": null
-    },
-    {
-      "sku": "SUS-0043",
-      "nombre": "Amortiguador delantero",
-      "marca": "Ford",
-      "modelos": [
-        "EcoSport"
-      ],
-      "categoria": "suspension",
-      "precio": 92500,
-      "estado": "disponible",
-      "imagen": null
-    },
-    {
-      "sku": "SUS-0044",
-      "nombre": "Amortiguador trasero",
-      "marca": "Chevrolet",
-      "modelos": [
-        "Onix"
-      ],
-      "categoria": "suspension",
-      "precio": 23000,
-      "estado": "pedido",
-      "imagen": null
-    },
-    {
-      "sku": "SUS-0045",
-      "nombre": "Amortiguador trasero",
-      "marca": "Ford",
-      "modelos": [
-        "Falcon",
-        "Focus"
-      ],
-      "categoria": "suspension",
-      "precio": 91000,
-      "estado": "disponible",
-      "imagen": null
-    },
-    {
-      "sku": "SUS-0046",
-      "nombre": "Rótula",
-      "marca": "Renault",
-      "modelos": [
-        "Kangoo"
-      ],
-      "categoria": "suspension",
-      "precio": 77000,
-      "estado": "disponible",
-      "imagen": null
-    },
-    {
-      "sku": "SUS-0047",
-      "nombre": "Rótula",
-      "marca": "Toyota",
-      "modelos": [
-        "Etios",
-        "Yaris",
-        "Hilux"
-      ],
-      "categoria": "suspension",
-      "precio": 94500,
-      "estado": "disponible",
-      "imagen": null
-    },
-    {
-      "sku": "SUS-0048",
-      "nombre": "Extremo de dirección",
-      "marca": "Fiat",
-      "modelos": [
-        "Cronos",
-        "Toro"
-      ],
-      "categoria": "suspension",
-      "precio": null,
-      "estado": "agotado",
-      "imagen": null
-    },
-    {
-      "sku": "SUS-0049",
-      "nombre": "Extremo de dirección",
-      "marca": "Volkswagen",
-      "modelos": [
-        "Suran",
-        "Vento"
-      ],
-      "categoria": "suspension",
-      "precio": 45000,
-      "estado": "pedido",
-      "imagen": null
-    },
-    {
-      "sku": "SUS-0050",
-      "nombre": "Extremo de dirección",
-      "marca": "Renault",
-      "modelos": [
-        "Clio",
-        "Kangoo"
-      ],
-      "categoria": "suspension",
-      "precio": 39500,
-      "estado": "pedido",
-      "imagen": null
-    },
-    {
-      "sku": "SUS-0051",
-      "nombre": "Bieleta",
-      "marca": "Volkswagen",
-      "modelos": [
-        "Suran"
-      ],
-      "categoria": "suspension",
-      "precio": 85000,
-      "estado": "pedido",
-      "imagen": null
-    },
-    {
-      "sku": "SUS-0052",
-      "nombre": "Bieleta",
-      "marca": "Ford",
-      "modelos": [
-        "Fiesta",
-        "Falcon",
-        "Focus"
-      ],
-      "categoria": "suspension",
-      "precio": 80000,
-      "estado": "disponible",
-      "imagen": null
-    },
-    {
-      "sku": "REF-0053",
-      "nombre": "Bomba de agua",
-      "marca": "Chevrolet",
-      "modelos": [
-        "Onix",
-        "S10",
-        "Cruze"
-      ],
-      "categoria": "refrigeracion",
-      "precio": 75500,
-      "estado": "pedido",
-      "imagen": null
-    },
-    {
-      "sku": "REF-0054",
-      "nombre": "Bomba de agua",
-      "marca": "Peugeot",
-      "modelos": [
-        "206",
-        "Partner"
-      ],
-      "categoria": "refrigeracion",
-      "precio": 74000,
-      "estado": "disponible",
-      "imagen": null
-    },
-    {
-      "sku": "REF-0055",
-      "nombre": "Termostato",
-      "marca": "Chevrolet",
-      "modelos": [
-        "S10",
-        "Corsa",
-        "Cruze"
-      ],
-      "categoria": "refrigeracion",
-      "precio": 45000,
-      "estado": "disponible",
-      "imagen": null
-    },
-    {
-      "sku": "REF-0056",
-      "nombre": "Termostato",
-      "marca": "Toyota",
-      "modelos": [
-        "Etios"
-      ],
-      "categoria": "refrigeracion",
-      "precio": 73500,
-      "estado": "pedido",
-      "imagen": null
-    },
-    {
-      "sku": "REF-0057",
-      "nombre": "Termostato",
-      "marca": "Toyota",
-      "modelos": [
-        "Etios"
-      ],
-      "categoria": "refrigeracion",
-      "precio": 80500,
-      "estado": "pedido",
-      "imagen": null
-    },
-    {
-      "sku": "REF-0058",
-      "nombre": "Radiador",
-      "marca": "Renault",
-      "modelos": [
-        "Kangoo",
-        "Sandero"
-      ],
-      "categoria": "refrigeracion",
-      "precio": 70500,
-      "estado": "disponible",
-      "imagen": null
-    },
-    {
-      "sku": "REF-0059",
-      "nombre": "Radiador",
-      "marca": "Ford",
-      "modelos": [
-        "Fiesta",
-        "EcoSport",
-        "Ranger"
-      ],
-      "categoria": "refrigeracion",
-      "precio": 20000,
-      "estado": "disponible",
-      "imagen": null
-    },
-    {
-      "sku": "REF-0060",
-      "nombre": "Radiador",
-      "marca": "Peugeot",
-      "modelos": [
-        "Partner"
-      ],
-      "categoria": "refrigeracion",
-      "precio": 66500,
-      "estado": "disponible",
-      "imagen": null
-    },
-    {
-      "sku": "REF-0061",
-      "nombre": "Manguera de radiador",
-      "marca": "Peugeot",
-      "modelos": [
-        "208",
-        "Partner",
-        "206"
-      ],
-      "categoria": "refrigeracion",
+      "categoria": "correas",
       "precio": 16000,
       "estado": "disponible",
       "imagen": null
     },
     {
-      "sku": "REF-0062",
-      "nombre": "Manguera de radiador",
-      "marca": "Peugeot",
-      "modelos": [
-        "Partner",
-        "206"
-      ],
-      "categoria": "refrigeracion",
-      "precio": 77500,
-      "estado": "disponible",
-      "imagen": null
-    },
-    {
-      "sku": "ELE-0063",
-      "nombre": "Batería 12V 65Ah",
-      "marca": "Fiat",
-      "modelos": [
-        "Palio",
-        "Toro"
-      ],
-      "categoria": "electricidad",
-      "precio": 311000,
-      "estado": "disponible",
-      "imagen": null
-    },
-    {
-      "sku": "ELE-0064",
-      "nombre": "Batería 12V 65Ah",
-      "marca": "Toyota",
-      "modelos": [
-        "Etios"
-      ],
-      "categoria": "electricidad",
-      "precio": 303000,
-      "estado": "disponible",
-      "imagen": null
-    },
-    {
-      "sku": "ELE-0065",
-      "nombre": "Batería 12V 75Ah",
-      "marca": "Renault",
-      "modelos": [
-        "Sandero",
-        "Kangoo",
-        "Clio"
-      ],
-      "categoria": "electricidad",
-      "precio": 269500,
-      "estado": "disponible",
-      "imagen": null
-    },
-    {
-      "sku": "ELE-0066",
-      "nombre": "Batería 12V 75Ah",
+      "sku": "FRE-0001",
+      "nombre": "Pastillas de freno delanteras",
       "marca": "Volkswagen",
       "modelos": [
         "Gol",
-        "Polo",
-        "Amarok"
+        "Suran"
       ],
-      "categoria": "electricidad",
-      "precio": 259000,
+      "categoria": "frenos",
+      "precio": 32000,
       "estado": "disponible",
       "imagen": null
     },
     {
-      "sku": "ELE-0067",
-      "nombre": "Batería 12V 75Ah",
-      "marca": "Renault",
-      "modelos": [
-        "Sandero",
-        "Clio",
-        "Kangoo"
-      ],
-      "categoria": "electricidad",
-      "precio": null,
-      "estado": "agotado",
-      "imagen": null
-    },
-    {
-      "sku": "ELE-0068",
-      "nombre": "Alternador",
-      "marca": "Fiat",
-      "modelos": [
-        "Toro"
-      ],
-      "categoria": "electricidad",
-      "precio": 116000,
-      "estado": "pedido",
-      "imagen": null
-    },
-    {
-      "sku": "ELE-0069",
-      "nombre": "Alternador",
+      "sku": "FRE-0002",
+      "nombre": "Pastillas de freno traseras",
       "marca": "Ford",
       "modelos": [
         "Ranger"
       ],
-      "categoria": "electricidad",
-      "precio": 110000,
+      "categoria": "frenos",
+      "precio": 38000,
       "estado": "disponible",
       "imagen": null
     },
     {
-      "sku": "ELE-0070",
-      "nombre": "Burro de arranque",
-      "marca": "Fiat",
+      "sku": "FRE-0003",
+      "nombre": "Disco de freno",
+      "marca": "Chevrolet",
       "modelos": [
-        "Toro",
-        "Palio"
+        "Onix",
+        "Cruze"
       ],
-      "categoria": "electricidad",
-      "precio": 142500,
+      "categoria": "frenos",
+      "precio": 45000,
       "estado": "disponible",
       "imagen": null
     },
     {
-      "sku": "ELE-0071",
-      "nombre": "Burro de arranque",
+      "sku": "FRE-0004",
+      "nombre": "Pastillas de freno delanteras",
+      "marca": "Toyota",
+      "modelos": [
+        "Hilux",
+        "Corolla"
+      ],
+      "categoria": "frenos",
+      "precio": 42000,
+      "estado": "disponible",
+      "imagen": null
+    },
+    {
+      "sku": "FRE-0005",
+      "nombre": "Disco de freno",
+      "marca": "Renault",
+      "modelos": [
+        "Kangoo",
+        "Clio"
+      ],
+      "categoria": "frenos",
+      "precio": 36000,
+      "estado": "pedido",
+      "imagen": null
+    },
+    {
+      "sku": "FRE-0006",
+      "nombre": "Cilindro de rueda",
+      "marca": "Peugeot",
+      "modelos": [
+        "206",
+        "Partner"
+      ],
+      "categoria": "frenos",
+      "precio": 24000,
+      "estado": "agotado",
+      "imagen": null
+    },
+    {
+      "sku": "ENC-0001",
+      "nombre": "Juego de bujías",
       "marca": "Volkswagen",
       "modelos": [
-        "Polo"
+        "Gol",
+        "Vento"
+      ],
+      "categoria": "encendido",
+      "precio": 18000,
+      "estado": "disponible",
+      "imagen": null
+    },
+    {
+      "sku": "ENC-0002",
+      "nombre": "Bobina de encendido",
+      "marca": "Ford",
+      "modelos": [
+        "Focus",
+        "Fiesta"
+      ],
+      "categoria": "encendido",
+      "precio": 45000,
+      "estado": "disponible",
+      "imagen": null
+    },
+    {
+      "sku": "ENC-0003",
+      "nombre": "Cable de bujía",
+      "marca": "Chevrolet",
+      "modelos": [
+        "Corsa"
+      ],
+      "categoria": "encendido",
+      "precio": 22000,
+      "estado": "disponible",
+      "imagen": null
+    },
+    {
+      "sku": "ENC-0004",
+      "nombre": "Juego de bujías",
+      "marca": "Fiat",
+      "modelos": [
+        "Palio",
+        "Cronos"
+      ],
+      "categoria": "encendido",
+      "precio": 15000,
+      "estado": "disponible",
+      "imagen": null
+    },
+    {
+      "sku": "ENC-0005",
+      "nombre": "Bobina de encendido",
+      "marca": "Toyota",
+      "modelos": [
+        "Corolla"
+      ],
+      "categoria": "encendido",
+      "precio": 48000,
+      "estado": "pedido",
+      "imagen": null
+    },
+    {
+      "sku": "SUS-0001",
+      "nombre": "Amortiguador delantero",
+      "marca": "Ford",
+      "modelos": [
+        "Focus",
+        "EcoSport"
+      ],
+      "categoria": "suspension",
+      "precio": 52000,
+      "estado": "disponible",
+      "imagen": null
+    },
+    {
+      "sku": "SUS-0002",
+      "nombre": "Amortiguador trasero",
+      "marca": "Volkswagen",
+      "modelos": [
+        "Gol Trend"
+      ],
+      "categoria": "suspension",
+      "precio": 48000,
+      "estado": "disponible",
+      "imagen": null
+    },
+    {
+      "sku": "SUS-0003",
+      "nombre": "Rótula",
+      "marca": "Chevrolet",
+      "modelos": [
+        "Corsa",
+        "Onix"
+      ],
+      "categoria": "suspension",
+      "precio": 28000,
+      "estado": "disponible",
+      "imagen": null
+    },
+    {
+      "sku": "SUS-0004",
+      "nombre": "Extremo de dirección",
+      "marca": "Renault",
+      "modelos": [
+        "Clio",
+        "Kangoo"
+      ],
+      "categoria": "suspension",
+      "precio": 24000,
+      "estado": "disponible",
+      "imagen": null
+    },
+    {
+      "sku": "SUS-0005",
+      "nombre": "Bieleta",
+      "marca": "Toyota",
+      "modelos": [
+        "Corolla",
+        "Etios"
+      ],
+      "categoria": "suspension",
+      "precio": 22000,
+      "estado": "pedido",
+      "imagen": null
+    },
+    {
+      "sku": "SUS-0006",
+      "nombre": "Amortiguador delantero",
+      "marca": "Peugeot",
+      "modelos": [
+        "208"
+      ],
+      "categoria": "suspension",
+      "precio": 54000,
+      "estado": "agotado",
+      "imagen": null
+    },
+    {
+      "sku": "REF-0001",
+      "nombre": "Bomba de agua",
+      "marca": "Volkswagen",
+      "modelos": [
+        "Gol",
+        "Suran"
+      ],
+      "categoria": "refrigeracion",
+      "precio": 42000,
+      "estado": "disponible",
+      "imagen": null
+    },
+    {
+      "sku": "REF-0002",
+      "nombre": "Termostato",
+      "marca": "Ford",
+      "modelos": [
+        "Focus",
+        "Ranger"
+      ],
+      "categoria": "refrigeracion",
+      "precio": 18000,
+      "estado": "disponible",
+      "imagen": null
+    },
+    {
+      "sku": "REF-0003",
+      "nombre": "Radiador",
+      "marca": "Chevrolet",
+      "modelos": [
+        "Corsa",
+        "Onix"
+      ],
+      "categoria": "refrigeracion",
+      "precio": 88000,
+      "estado": "disponible",
+      "imagen": null
+    },
+    {
+      "sku": "REF-0004",
+      "nombre": "Manguera de radiador",
+      "marca": "Fiat",
+      "modelos": [
+        "Palio"
+      ],
+      "categoria": "refrigeracion",
+      "precio": 12000,
+      "estado": "disponible",
+      "imagen": null
+    },
+    {
+      "sku": "REF-0005",
+      "nombre": "Bomba de agua",
+      "marca": "Toyota",
+      "modelos": [
+        "Hilux"
+      ],
+      "categoria": "refrigeracion",
+      "precio": 56000,
+      "estado": "pedido",
+      "imagen": null
+    },
+    {
+      "sku": "ELE-0001",
+      "nombre": "Batería 12V 65Ah",
+      "marca": "Volkswagen",
+      "modelos": [
+        "Gol",
+        "Polo",
+        "Vento"
       ],
       "categoria": "electricidad",
-      "precio": 179000,
+      "precio": 125000,
       "estado": "disponible",
+      "imagen": null
+    },
+    {
+      "sku": "ELE-0002",
+      "nombre": "Batería 12V 75Ah",
+      "marca": "Ford",
+      "modelos": [
+        "Ranger",
+        "Focus"
+      ],
+      "categoria": "electricidad",
+      "precio": 148000,
+      "estado": "disponible",
+      "imagen": null
+    },
+    {
+      "sku": "ELE-0003",
+      "nombre": "Alternador",
+      "marca": "Chevrolet",
+      "modelos": [
+        "Corsa",
+        "Onix"
+      ],
+      "categoria": "electricidad",
+      "precio": 210000,
+      "estado": "disponible",
+      "imagen": null
+    },
+    {
+      "sku": "ELE-0004",
+      "nombre": "Burro de arranque",
+      "marca": "Renault",
+      "modelos": [
+        "Kangoo",
+        "Clio"
+      ],
+      "categoria": "electricidad",
+      "precio": 185000,
+      "estado": "pedido",
+      "imagen": null
+    },
+    {
+      "sku": "ELE-0005",
+      "nombre": "Batería 12V 65Ah",
+      "marca": "Toyota",
+      "modelos": [
+        "Corolla",
+        "Etios"
+      ],
+      "categoria": "electricidad",
+      "precio": 122000,
+      "estado": "disponible",
+      "imagen": null
+    },
+    {
+      "sku": "ELE-0006",
+      "nombre": "Alternador",
+      "marca": "Fiat",
+      "modelos": [
+        "Cronos"
+      ],
+      "categoria": "electricidad",
+      "precio": 195000,
+      "estado": "agotado",
       "imagen": null
     }
   ]
