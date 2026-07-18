@@ -1,15 +1,136 @@
 ---
 import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import WhatsAppButton from '../components/WhatsAppButton.astro';
 import negocio from '../data/negocio.json';
 ---
 
 <Base
-  titulo="JBD Repuestos en Belén de Escobar | Autopartes"
-  descripcion="Casa de repuestos automotor en Belén de Escobar. Filtros, correas, baterías y más. Consultá por WhatsApp."
+  titulo="JBD Repuestos en Belén de Escobar | Autopartes y filtros"
+  descripcion="Casa de repuestos automotor en Belén de Escobar. Filtros, correas, baterías, amortiguadores. Consultá stock y precio por WhatsApp."
 >
-  <main style="max-width: 640px; margin: 3rem auto; font-family: system-ui; padding: 0 1rem;">
-    <h1>{negocio.nombre}</h1>
-    <p>{negocio.direccion.calle}, {negocio.direccion.localidad}</p>
-    <p>Prueba de layout. Acá va a ir el buscador de repuestos.</p>
+  <Header />
+
+  <main>
+    <section class="hero">
+      <div class="hero-inner">
+        <span class="hero-kicker">Belén de Escobar · Zona Norte</span>
+        <h1 class="hero-titulo">
+          El repuesto que buscás, <span class="acento">sin vueltas</span>.
+        </h1>
+        <p class="hero-sub">
+          Filtros, correas, baterías, amortiguadores y más. Decinos qué auto tenés
+          y qué necesitás: te confirmamos stock y precio al toque.
+        </p>
+        <div class="hero-cta">
+          <WhatsAppButton
+            texto="Consultar por WhatsApp"
+            mensaje="Hola JBD, necesito un repuesto para mi auto."
+            origen="hero"
+            size="lg"
+          />
+          <a href="/catalogo/" class="btn-sec">Ver catálogo</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="tiras">
+      <div class="tira">
+        <h3>Stock real</h3>
+        <p>Si está en góndola, te lo confirmamos en el momento. Sin promesas vacías.</p>
+      </div>
+      <div class="tira">
+        <h3>A pedido en 24–72hs</h3>
+        <p>Lo que no tenemos, lo conseguimos rápido con nuestros proveedores.</p>
+      </div>
+      <div class="tira">
+        <h3>Te asesoramos</h3>
+        <p>Atiende gente que sabe de autos. Traé la duda, no solo el código.</p>
+      </div>
+    </section>
   </main>
+
+  <Footer />
 </Base>
+
+<style>
+  .hero {
+    padding: var(--esp-16) var(--esp-4) var(--esp-12);
+    border-bottom: 1px solid var(--borde-card);
+  }
+  .hero-inner {
+    max-width: 720px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .hero-kicker {
+    display: inline-block;
+    font-family: var(--fuente-texto);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-label);
+    color: var(--color-marca-texto);
+    margin-bottom: var(--esp-4);
+  }
+  .hero-titulo {
+    font-size: var(--texto-display);
+    font-weight: var(--peso-black);
+    line-height: 1.05;
+    margin-bottom: var(--esp-5);
+  }
+  .hero-titulo .acento { color: var(--color-marca); }
+  .hero-sub {
+    font-size: var(--texto-cuerpo-lg);
+    color: var(--color-texto-secundario);
+    max-width: 52ch;
+    margin: 0 auto var(--esp-8);
+  }
+  .hero-cta {
+    display: flex;
+    gap: var(--esp-3);
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .btn-sec {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 54px;
+    padding: 16px 24px;
+    font-family: var(--fuente-texto);
+    font-size: var(--texto-cuerpo-lg);
+    font-weight: var(--peso-semibold);
+    color: var(--color-texto-primario);
+    background: transparent;
+    border: 1px solid var(--color-borde-fuerte);
+    border-radius: var(--radio-md);
+  }
+  .btn-sec:hover {
+    background: var(--color-superficie-alta);
+    text-decoration: none;
+  }
+
+  .tiras {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: var(--esp-12) var(--esp-4);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--esp-6);
+  }
+  .tira {
+    background: var(--superficie-card);
+    border: 1px solid var(--borde-card);
+    border-radius: var(--radio-md);
+    padding: var(--esp-6);
+  }
+  .tira h3 { margin-bottom: var(--esp-2); }
+  .tira p { margin: 0; color: var(--color-texto-secundario); font-size: var(--texto-sm); }
+
+  @media (max-width: 760px) {
+    .tiras { grid-template-columns: 1fr; }
+    .hero-titulo { font-size: 32px; }
+  }
+</style>

@@ -1,0 +1,127 @@
+---
+import negocio from '../data/negocio.json';
+
+const dias = {
+  Mo: 'Lun', Tu: 'Mar', We: 'Mié', Th: 'Jue', Fr: 'Vie', Sa: 'Sáb', Su: 'Dom',
+};
+function rango(h) {
+  const ds = h.dias.map(d => dias[d]);
+  const etiqueta = ds.length > 1 ? `${ds[0]} a ${ds[ds.length - 1]}` : ds[0];
+  return `${etiqueta}: ${h.abre} – ${h.cierra}`;
+}
+const anio = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div class="footer-col">
+      <span class="logo">
+        <span class="logo-nombre">JBD<span class="logo-punto">.</span></span>
+        <span class="logo-sub">Repuestos</span>
+      </span>
+      <p class="footer-desc">
+        Casa de repuestos automotor en Belén de Escobar. Atendemos mostrador y WhatsApp.
+      </p>
+    </div>
+
+    <div class="footer-col">
+      <h4 class="footer-titulo">Dónde estamos</h4>
+      <p class="footer-linea">{negocio.direccion.calle}</p>
+      <p class="footer-linea">{negocio.direccion.localidad}, {negocio.direccion.provincia}</p>
+      <p class="footer-linea">
+        <a href={`tel:${negocio.telefono.replace(/\s/g, '')}`}>{negocio.telefono}</a>
+      </p>
+      <p class="footer-linea">
+        <a href={`mailto:${negocio.email}`}>{negocio.email}</a>
+      </p>
+    </div>
+
+    <div class="footer-col">
+      <h4 class="footer-titulo">Horarios</h4>
+      {negocio.horarios.map(h => <p class="footer-linea">{rango(h)}</p>)}
+    </div>
+
+    <div class="footer-col">
+      <h4 class="footer-titulo">Zonas de entrega</h4>
+      <p class="footer-linea footer-zonas">{negocio.zonas.join(' · ')}</p>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <span>© {anio} {negocio.razonSocial}. Todos los derechos reservados.</span>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--superficie-card);
+    border-top: 1px solid var(--borde-card);
+    padding: var(--esp-12) var(--esp-4) var(--esp-6);
+    margin-top: var(--esp-16);
+  }
+  .footer-grid {
+    max-width: 1080px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    gap: var(--esp-8);
+  }
+  .logo {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 7px;
+    font-family: var(--fuente-display);
+    line-height: 1;
+  }
+  .logo-nombre {
+    font-size: 24px;
+    font-weight: var(--peso-black);
+    letter-spacing: -0.02em;
+    color: var(--color-texto-primario);
+  }
+  .logo-punto { color: var(--color-marca); }
+  .logo-sub {
+    font-size: 10px;
+    font-weight: var(--peso-bold);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-texto-secundario);
+  }
+  .footer-desc {
+    margin-top: var(--esp-3);
+    color: var(--color-texto-secundario);
+    font-size: var(--texto-sm);
+    max-width: 32ch;
+  }
+  .footer-titulo {
+    font-family: var(--fuente-texto);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-bold);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-label);
+    color: var(--color-texto-terciario);
+    margin: 0 0 var(--esp-3);
+  }
+  .footer-linea {
+    margin: 0 0 var(--esp-2);
+    font-size: var(--texto-sm);
+    color: var(--color-texto-secundario);
+  }
+  .footer-linea a { color: var(--color-texto-secundario); }
+  .footer-linea a:hover { color: var(--color-marca-texto); }
+  .footer-zonas { line-height: 1.7; }
+  .footer-bottom {
+    max-width: 1080px;
+    margin: var(--esp-8) auto 0;
+    padding-top: var(--esp-5);
+    border-top: 1px solid var(--borde-card);
+    font-size: var(--texto-xs);
+    color: var(--color-texto-terciario);
+  }
+
+  @media (max-width: 760px) {
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: var(--esp-6); }
+  }
+  @media (max-width: 440px) {
+    .footer-grid { grid-template-columns: 1fr; }
+  }
+</style>
