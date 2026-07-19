@@ -1,0 +1,33 @@
+---
+import { getCollection, render } from 'astro:content';
+import Post from '../../layouts/Post.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+const todos = await getCollection('blog', ({ data }) => !data.draft);
+const relacionados = post.data.relacionados
+  .map((slug: string) => todos.find((p) => p.id === slug))
+  .filter(Boolean)
+  .map((p: any) => ({ slug: p.id, titulo: p.data.titulo }));
+---
+<Post
+  slug={post.id}
+  titulo={post.data.titulo}
+  descripcion={post.data.descripcion}
+  fecha={post.data.fecha}
+  actualizado={post.data.actualizado}
+  cluster={post.data.cluster}
+  faqs={post.data.faqs}
+  relacionados={relacionados}
+>
+  <Content />
+</Post>

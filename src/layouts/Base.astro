@@ -2,6 +2,7 @@
 import negocio from '../data/negocio.json';
 import SchemaLocalBusiness from '../components/SchemaLocalBusiness.astro';
 import '../styles/tokens.css';
+import Carrito from '../components/Carrito.astro';
 
 interface Props {
   titulo: string;
@@ -26,5 +27,6 @@ const { titulo, descripcion } = Astro.props;
   </head>
   <body>
     <slot />
+    <Carrito />
   </body>
 </html>

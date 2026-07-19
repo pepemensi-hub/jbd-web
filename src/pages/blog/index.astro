@@ -1,0 +1,55 @@
+---
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { getCollection } from 'astro:content';
+import negocio from '../../data/negocio.json';
+
+const CLUSTER_LABEL: Record<string, string> = {
+  mantenimiento: 'Mantenimiento',
+  diagnostico: 'Diagnóstico',
+  local: 'Local',
+  clasicos: 'Clásicos',
+};
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.fecha.valueOf() - a.data.fecha.valueOf()
+);
+
+const formateador = new Intl.DateTimeFormat('es-AR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+---
+<Base
+  titulo={`Blog | ${negocio.nombre}`}
+  descripcion={`Notas sobre mantenimiento, diagnóstico y repuestos de auto, escritas por ${negocio.nombre} en ${negocio.direccion.localidad}.`}
+>
+  <Header />
+  <main class="blog-main">
+    <div class="blog-head">
+      <h1>Blog</h1>
+      <p class="blog-sub">Mantenimiento, diagnóstico y repuestos, explicado sin vueltas.</p>
+    </div>
+    <div class="blog-lista">
+      {posts.map((post) => (
+        <a class="blog-item" href={`/blog/${post.id}/`}>
+          <span class="blog-item-cluster">{CLUSTER_LABEL[post.data.cluster]}</span>
+          <h2>{post.data.titulo}</h2>
+          <p>{post.data.descripcion}</p>
+          <span class="blog-item-fecha">{formateador.format(post.data.fecha)}</span>
+        </a>
+      ))}
+    </div>
+  </main>
+  <Footer />
+</Base>
+<style>
+  .blog-main { max-width: 860px; margin: 0 auto; padding: var(--esp-8) var(--esp-4) var(--esp-16); }
+  .blog-head h1 { margin: 0 0 var(--esp-2); font-size: var(--texto-display); }
+  .blog-sub { color: var(--color-texto-secundario); margin: 0 0 var(--esp-8); }
+  .blog-lista { display: flex; flex-direction: column; gap: var(--esp-5); }
+  .blog-item { display: block; padding: var(--esp-6); background: var(--superficie-card); border: 1px solid var(--borde-card); border-radius: var(--radio-lg); transition: border-color .12s; }
+  .blog-item:hover { border-color: var(--color-marca); text-decoration: none; }
+  .blog-item-cluster { display: inline-block; font-size: var(--texto-xs); font-weight: var(--peso-bold); text-transform: uppercase; letter-spacing: var(--tracking-label); color: var(--color-marca-texto); margin-bottom: var(--esp-2); }
+  .blog-item h2 { font-size: var(--texto-h3); margin: 0 0 var(--esp-2); color: var(--color-texto-primario); }
+  .blog-item p { color: var(--color-texto-secundario); margin: 0 0 var(--esp-3); }
+  .blog-item-fecha { font-size: var(--texto-xs); color: var(--color-texto-terciario); }
+</style>

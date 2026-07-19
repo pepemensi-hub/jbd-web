@@ -1,0 +1,118 @@
+---
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import WhatsAppButton from '../../components/WhatsAppButton.astro';
+import negocio from '../../data/negocio.json';
+
+const DIAS = {
+  Mo: 'Lunes', Tu: 'Martes', We: 'Miércoles', Th: 'Jueves',
+  Fr: 'Viernes', Sa: 'Sábado', Su: 'Domingo',
+};
+
+function formatearHorario(h) {
+  const nombres = h.dias.map(d => DIAS[d]);
+  const etiqueta = nombres.length > 1 ? `${nombres[0]} a ${nombres[nombres.length - 1]}` : nombres[0];
+  return { etiqueta, rango: `${h.abre} a ${h.cierra} hs` };
+}
+
+const horariosFmt = negocio.horarios.map(formatearHorario);
+const telLimpio = negocio.telefono.replace(/\s/g, '');
+const direccionCompleta = `${negocio.direccion.calle}, ${negocio.direccion.localidad}, ${negocio.direccion.provincia}`;
+const mapaSrc = `https://maps.google.com/maps?q=${negocio.geo.lat},${negocio.geo.lng}&z=16&output=embed`;
+const comoLlegarUrl = `https://www.google.com/maps/dir/?api=1&destination=${negocio.geo.lat},${negocio.geo.lng}`;
+const mensajeWa = `Hola JBD, quiero pasar por el local en ${negocio.direccion.calle}, ${negocio.direccion.localidad}. ¿Tienen stock de lo que busco?`;
+---
+<Base
+  titulo={`Ubicación y horarios | ${negocio.nombre} en ${negocio.direccion.localidad}`}
+  descripcion={`Encontranos en ${direccionCompleta}. Horarios, teléfono, medios de pago y zonas de entrega de ${negocio.nombre}.`}
+>
+  <Header />
+  <main class="ubi-main">
+    <div class="ubi-head">
+      <h1>Dónde estamos</h1>
+      <p class="ubi-sub">Local a la calle en {negocio.direccion.localidad}, atención por mostrador y WhatsApp.</p>
+    </div>
+
+    <div class="ubi-layout">
+      <div class="ubi-info">
+        <section class="ubi-bloque">
+          <h2>Dirección</h2>
+          <p class="ubi-direccion">{negocio.direccion.calle}</p>
+          <p class="ubi-direccion-sub">{negocio.direccion.localidad}, {negocio.direccion.provincia} ({negocio.direccion.cp})</p>
+          <div class="ubi-acciones">
+            <a class="ubi-llegar" href={comoLlegarUrl} target="_blank" rel="noopener noreferrer">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+              Cómo llegar
+            </a>
+            <a class="ubi-tel" href={`tel:${telLimpio}`}>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              {negocio.telefono}
+            </a>
+          </div>
+          <WhatsAppButton texto="Consultar por WhatsApp" mensaje={mensajeWa} origen="ubicacion" full />
+        </section>
+
+        <section class="ubi-bloque">
+          <h2>Horarios</h2>
+          <ul class="ubi-horarios">
+            {horariosFmt.map(h => (
+              <li><span class="ubi-horario-dia">{h.etiqueta}</span><span class="ubi-horario-rango">{h.rango}</span></li>
+            ))}
+          </ul>
+          <p class="ubi-nota">Feriados: consultanos por WhatsApp, coordinamos horario especial.</p>
+        </section>
+
+        <section class="ubi-bloque">
+          <h2>Medios de pago</h2>
+          <ul class="ubi-chips">
+            {negocio.pagos.map(p => <li>{p}</li>)}
+          </ul>
+        </section>
+
+        <section class="ubi-bloque">
+          <h2>Zonas que cubrimos</h2>
+          <p class="ubi-zonas">{negocio.zonas.join(' · ')}</p>
+        </section>
+      </div>
+
+      <div class="ubi-mapa-wrap">
+        <iframe
+          class="ubi-mapa"
+          src={mapaSrc}
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title={`Ubicación de ${negocio.nombre} en el mapa`}
+        ></iframe>
+      </div>
+    </div>
+  </main>
+  <Footer />
+</Base>
+<style>
+  .ubi-main { max-width: 1180px; margin: 0 auto; padding: var(--esp-8) var(--esp-4) var(--esp-16); }
+  .ubi-head h1 { margin: 0 0 var(--esp-2); font-size: var(--texto-display); }
+  .ubi-sub { color: var(--color-texto-secundario); margin: 0 0 var(--esp-8); }
+  .ubi-layout { display: grid; grid-template-columns: 1fr 1fr; gap: var(--esp-8); align-items: start; }
+  .ubi-info { display: flex; flex-direction: column; gap: var(--esp-8); }
+  .ubi-bloque h2 { font-size: var(--texto-h3); margin: 0 0 var(--esp-3); }
+  .ubi-direccion { font-family: var(--fuente-display); font-size: var(--texto-h2); font-weight: var(--peso-bold); margin: 0; }
+  .ubi-direccion-sub { color: var(--color-texto-secundario); margin: 4px 0 var(--esp-4); }
+  .ubi-acciones { display: flex; flex-wrap: wrap; gap: var(--esp-3); margin-bottom: var(--esp-4); }
+  .ubi-llegar, .ubi-tel { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: var(--radio-md); border: 1px solid var(--color-borde-fuerte); color: var(--color-texto-primario); font-family: var(--fuente-texto); font-size: var(--texto-sm); font-weight: var(--peso-semibold); }
+  .ubi-llegar:hover, .ubi-tel:hover { border-color: var(--color-marca); text-decoration: none; }
+  .ubi-horarios { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--esp-2); }
+  .ubi-horarios li { display: flex; justify-content: space-between; gap: var(--esp-3); padding: var(--esp-2) 0; border-bottom: 1px solid var(--borde-card); font-size: var(--texto-sm); }
+  .ubi-horario-dia { color: var(--color-texto-primario); font-weight: var(--peso-semibold); }
+  .ubi-horario-rango { color: var(--color-texto-secundario); }
+  .ubi-nota { font-size: var(--texto-xs); color: var(--color-texto-terciario); margin: var(--esp-3) 0 0; }
+  .ubi-chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--esp-2); }
+  .ubi-chips li { font-size: var(--texto-sm); padding: 6px 14px; border-radius: var(--radio-pill); border: 1px solid var(--color-borde-fuerte); color: var(--color-texto-secundario); }
+  .ubi-zonas { color: var(--color-texto-secundario); line-height: 1.8; margin: 0; }
+  .ubi-mapa-wrap { border-radius: var(--radio-lg); overflow: hidden; border: 1px solid var(--borde-card); aspect-ratio: 4/5; position: sticky; top: var(--esp-4); }
+  .ubi-mapa { width: 100%; height: 100%; border: 0; filter: grayscale(0.15) contrast(1.05); }
+  @media (max-width: 860px) {
+    .ubi-layout { grid-template-columns: 1fr; }
+    .ubi-mapa-wrap { aspect-ratio: 16/10; position: static; }
+  }
+</style>
