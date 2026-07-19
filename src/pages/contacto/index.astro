@@ -1,0 +1,150 @@
+---
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import WhatsAppButton from '../../components/WhatsAppButton.astro';
+import negocio from '../../data/negocio.json';
+
+const DIAS = {
+  Mo: 'Lunes', Tu: 'Martes', We: 'Miércoles', Th: 'Jueves',
+  Fr: 'Viernes', Sa: 'Sábado', Su: 'Domingo',
+};
+
+function formatearHorario(h) {
+  const nombres = h.dias.map(d => DIAS[d]);
+  const etiqueta = nombres.length > 1 ? `${nombres[0]} a ${nombres[nombres.length - 1]}` : nombres[0];
+  return { etiqueta, rango: `${h.abre} a ${h.cierra} hs` };
+}
+
+const horariosFmt = negocio.horarios.map(formatearHorario);
+const telLimpio = negocio.telefono.replace(/\s/g, '');
+const direccionCompleta = `${negocio.direccion.calle}, ${negocio.direccion.localidad}, ${negocio.direccion.provincia}`;
+const mapaSrc = `https://maps.google.com/maps?q=${negocio.geo.lat},${negocio.geo.lng}&z=16&output=embed`;
+const comoLlegarUrl = `https://www.google.com/maps/dir/?api=1&destination=${negocio.geo.lat},${negocio.geo.lng}`;
+const mensajeWa = 'Hola JBD, quiero hacer una consulta.';
+const waUrl = `https://wa.me/${negocio.whatsapp}?text=${encodeURIComponent(mensajeWa)}`;
+---
+<Base
+  titulo={`Contacto | ${negocio.nombre}`}
+  descripcion={`Escribinos por WhatsApp, llamanos o visitanos en ${direccionCompleta}. Todos los canales de contacto de ${negocio.nombre}.`}
+>
+  <Header />
+  <main class="con-main">
+    <div class="con-head">
+      <h1>Contacto</h1>
+      <p class="con-sub">¿Tenés una consulta? Escribinos, llamanos o pasá por el local — elegí el canal que más te sirva.</p>
+    </div>
+
+    <div class="con-canales">
+      <a class="con-canal con-canal-wa" href={waUrl} target="_blank" rel="noopener noreferrer" data-wa="contacto">
+        <span class="con-canal-icon">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+        </span>
+        <span class="con-canal-texto">
+          <strong>WhatsApp</strong>
+          <span>Respuesta más rápida</span>
+        </span>
+      </a>
+
+      <a class="con-canal" href={`tel:${telLimpio}`}>
+        <span class="con-canal-icon">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        </span>
+        <span class="con-canal-texto">
+          <strong>Llamar</strong>
+          <span>{negocio.telefono}</span>
+        </span>
+      </a>
+
+      <a class="con-canal" href={`mailto:${negocio.email}`}>
+        <span class="con-canal-icon">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4z" opacity="0"/><path d="m3 6 9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg>
+        </span>
+        <span class="con-canal-texto">
+          <strong>Email</strong>
+          <span>{negocio.email}</span>
+        </span>
+      </a>
+    </div>
+
+    <div class="con-layout">
+      <div class="con-info">
+        <section class="con-bloque">
+          <h2>Dónde estamos</h2>
+          <p class="con-direccion">{negocio.direccion.calle}</p>
+          <p class="con-direccion-sub">{negocio.direccion.localidad}, {negocio.direccion.provincia} ({negocio.direccion.cp})</p>
+          <a class="con-llegar" href={comoLlegarUrl} target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+            Cómo llegar
+          </a>
+        </section>
+
+        <section class="con-bloque">
+          <h2>Horarios</h2>
+          <ul class="con-horarios">
+            {horariosFmt.map(h => (
+              <li><span class="con-horario-dia">{h.etiqueta}</span><span class="con-horario-rango">{h.rango}</span></li>
+            ))}
+          </ul>
+        </section>
+      </div>
+
+      <div class="con-mapa-wrap">
+        <iframe
+          class="con-mapa"
+          src={mapaSrc}
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title={`Ubicación de ${negocio.nombre} en el mapa`}
+        ></iframe>
+      </div>
+    </div>
+
+    <section class="con-cta">
+      <h2>¿Preferís escribirnos directamente?</h2>
+      <p>Contanos qué necesitás y te respondemos por WhatsApp.</p>
+      <WhatsAppButton texto="Escribinos por WhatsApp" mensaje={mensajeWa} origen="contacto" size="lg" />
+    </section>
+  </main>
+  <Footer />
+</Base>
+<style>
+  .con-main { max-width: 1180px; margin: 0 auto; padding: var(--esp-8) var(--esp-4) var(--esp-16); }
+  .con-head h1 { margin: 0 0 var(--esp-2); font-size: var(--texto-display); }
+  .con-sub { color: var(--color-texto-secundario); max-width: 58ch; margin: 0 0 var(--esp-8); }
+
+  .con-canales { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--esp-4); margin-bottom: var(--esp-10); }
+  .con-canal { display: flex; align-items: center; gap: var(--esp-4); padding: var(--esp-5); background: var(--superficie-card); border: 1px solid var(--borde-card); border-radius: var(--radio-lg); transition: border-color .12s; }
+  .con-canal:hover { border-color: var(--color-marca); text-decoration: none; }
+  .con-canal-wa { border-color: var(--color-whatsapp); }
+  .con-canal-icon { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: var(--radio-md); background: var(--color-marca-tinte); color: var(--color-marca); flex-shrink: 0; }
+  .con-canal-wa .con-canal-icon { background: rgba(37,211,102,0.14); color: var(--color-whatsapp); }
+  .con-canal-texto { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .con-canal-texto strong { font-family: var(--fuente-display); font-size: var(--texto-cuerpo); color: var(--color-texto-primario); }
+  .con-canal-texto span { font-size: var(--texto-sm); color: var(--color-texto-secundario); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .con-layout { display: grid; grid-template-columns: 1fr 1fr; gap: var(--esp-8); align-items: start; }
+  .con-info { display: flex; flex-direction: column; gap: var(--esp-8); }
+  .con-bloque h2 { font-size: var(--texto-h3); margin: 0 0 var(--esp-3); }
+  .con-direccion { font-family: var(--fuente-display); font-size: var(--texto-h2); font-weight: var(--peso-bold); margin: 0; }
+  .con-direccion-sub { color: var(--color-texto-secundario); margin: 4px 0 var(--esp-4); }
+  .con-llegar { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: var(--radio-md); border: 1px solid var(--color-borde-fuerte); color: var(--color-texto-primario); font-family: var(--fuente-texto); font-size: var(--texto-sm); font-weight: var(--peso-semibold); }
+  .con-llegar:hover { border-color: var(--color-marca); text-decoration: none; }
+  .con-horarios { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--esp-2); }
+  .con-horarios li { display: flex; justify-content: space-between; gap: var(--esp-3); padding: var(--esp-2) 0; border-bottom: 1px solid var(--borde-card); font-size: var(--texto-sm); }
+  .con-horario-dia { color: var(--color-texto-primario); font-weight: var(--peso-semibold); }
+  .con-horario-rango { color: var(--color-texto-secundario); }
+
+  .con-mapa-wrap { border-radius: var(--radio-lg); overflow: hidden; border: 1px solid var(--borde-card); aspect-ratio: 4/5; position: sticky; top: var(--esp-4); }
+  .con-mapa { width: 100%; height: 100%; border: 0; filter: grayscale(0.15) contrast(1.05); }
+
+  .con-cta { text-align: center; max-width: 560px; margin: var(--esp-12) auto 0; padding-top: var(--esp-10); border-top: 1px solid var(--borde-card); }
+  .con-cta h2 { font-size: var(--texto-h2); margin: 0 0 var(--esp-2); }
+  .con-cta p { color: var(--color-texto-secundario); margin: 0 0 var(--esp-6); }
+
+  @media (max-width: 860px) {
+    .con-canales { grid-template-columns: 1fr; }
+    .con-layout { grid-template-columns: 1fr; }
+    .con-mapa-wrap { aspect-ratio: 16/10; position: static; }
+  }
+</style>
