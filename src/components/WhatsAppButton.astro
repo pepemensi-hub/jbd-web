@@ -1,5 +1,6 @@
 ---
 import negocio from '../data/negocio.json';
+import { linkWA } from '../lib/whatsapp.js';
 
 interface Props {
   texto?: string;
@@ -19,7 +20,7 @@ const {
   sku,
 } = Astro.props;
 
-const url = `https://wa.me/${negocio.whatsapp}${mensaje ? '?text=' + encodeURIComponent(mensaje) : ''}`;
+const url = linkWA({ whatsapp: negocio.whatsapp, mensaje });
 ---
 <a
   class:list={['wa-btn', `wa-${size}`, { 'wa-full': full }]}
