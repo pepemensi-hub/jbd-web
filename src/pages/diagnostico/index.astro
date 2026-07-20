@@ -1,0 +1,476 @@
+---
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import negocio from '../../data/negocio.json';
+import { linkWA } from '../../lib/whatsapp.js';
+
+const preguntas: Record<string, { texto: string; opciones: { label: string; ir: string }[] }> = {
+  inicio: {
+    texto: '¿Qué notás en tu auto?',
+    opciones: [
+      { label: 'Un ruido raro', ir: 'q-ruido' },
+      { label: 'Una luz en el tablero', ir: 'q-luz' },
+      { label: 'Cuesta arrancar / no arranca', ir: 'q-arranque' },
+      { label: 'Algo que se siente al manejar', ir: 'q-manejo' },
+      { label: 'Consumo raro / humo', ir: 'q-consumo' },
+    ],
+  },
+  'q-ruido': {
+    texto: '¿Cuándo se escucha el ruido?',
+    opciones: [
+      { label: 'Al frenar', ir: 'r-ruido-frenar' },
+      { label: 'Al girar el volante', ir: 'r-ruido-girar' },
+      { label: 'Al acelerar', ir: 'r-ruido-acelerar' },
+      { label: 'Todo el tiempo', ir: 'r-ruido-siempre' },
+    ],
+  },
+  'q-luz': {
+    texto: '¿Qué luz se prendió en el tablero?',
+    opciones: [
+      { label: 'Check engine / motor', ir: 'r-luz-motor' },
+      { label: 'Batería / carga', ir: 'r-luz-bateria' },
+      { label: 'Temperatura del motor', ir: 'r-luz-temp' },
+      { label: 'Presión de aceite', ir: 'r-luz-aceite' },
+    ],
+  },
+  'q-arranque': {
+    texto: '¿Cómo es exactamente?',
+    opciones: [
+      { label: 'No hace nada, ni un click', ir: 'r-arranque-nada' },
+      { label: 'Gira pero no prende', ir: 'r-arranque-gira' },
+      { label: 'Prende y se apaga enseguida', ir: 'r-arranque-corta' },
+    ],
+  },
+  'q-manejo': {
+    texto: '¿Qué sentís al manejar?',
+    opciones: [
+      { label: 'Vibra al frenar', ir: 'r-manejo-frenar' },
+      { label: 'Tira para un costado', ir: 'r-manejo-tira' },
+      { label: 'Vibra el volante en ruta', ir: 'r-manejo-volante' },
+      { label: 'Tironea o pierde fuerza al acelerar', ir: 'r-manejo-tiron' },
+    ],
+  },
+  'q-consumo': {
+    texto: '¿Qué notás exactamente?',
+    opciones: [
+      { label: 'Humo azulado', ir: 'r-consumo-azul' },
+      { label: 'Humo blanco espeso', ir: 'r-consumo-blanco' },
+      { label: 'Humo negro', ir: 'r-consumo-negro' },
+      { label: 'Consume más nafta, sin humo', ir: 'r-consumo-nafta' },
+    ],
+  },
+};
+
+const resultados: Record<string, { sintoma: string; causas: string[]; repuestos: string | null; nota: string | null }> = {
+  'r-ruido-frenar': {
+    sintoma: 'hace ruido al frenar',
+    causas: [
+      'Pastillas de freno gastadas — la causa más común de un chillido agudo al frenar.',
+      'Discos de freno desgastados o con marcas.',
+      'Algún resto trabado entre la pastilla y el disco.',
+    ],
+    repuestos: 'pastillas y discos de freno',
+    nota: null,
+  },
+  'r-ruido-girar': {
+    sintoma: 'hace ruido al girar el volante',
+    causas: [
+      'Rótulas de suspensión gastadas — un ruido tipo "clonc" en baja velocidad es bastante típico.',
+      'Extremos de dirección con juego.',
+      'Rodamiento de rueda dañado, sobre todo si el ruido cambia con la velocidad.',
+    ],
+    repuestos: 'rótulas, extremos de dirección y rodamientos',
+    nota: null,
+  },
+  'r-ruido-acelerar': {
+    sintoma: 'hace ruido al acelerar',
+    causas: [
+      'Correa poly-v floja o gastada (un chirrido agudo es bastante típico).',
+      'Soportes del motor desgastados, que dejan que el motor se mueva de más.',
+      'Algo suelto en el escape, golpeando contra la carrocería.',
+    ],
+    repuestos: 'correas poly-v y soportes de motor',
+    nota: null,
+  },
+  'r-ruido-siempre': {
+    sintoma: 'hace un ruido raro todo el tiempo',
+    causas: [
+      'Rodamiento de rueda gastado (el ruido suele cambiar según la velocidad).',
+      'Problemas en los palieres u homocinéticas, sobre todo si además notás vibración.',
+      'Algo suelto bajo el auto, como el protector de motor o el escape.',
+    ],
+    repuestos: 'rodamientos y palieres',
+    nota: null,
+  },
+  'r-luz-motor': {
+    sintoma: 'tiene prendida la luz de check engine',
+    causas: [
+      'El testigo de check engine puede deberse a decenas de causas distintas: desde una bujía gastada hasta un sensor con falla.',
+      'No es algo que se pueda diagnosticar a simple vista — necesita una lectura con scanner para saber la causa exacta.',
+    ],
+    repuestos: null,
+    nota: null,
+  },
+  'r-luz-bateria': {
+    sintoma: 'tiene prendida la luz de batería',
+    causas: [
+      'Batería perdiendo carga, sobre todo si ya tiene más de 3 años.',
+      'Alternador con problemas para recargarla mientras el auto anda.',
+      'Correa o conexión floja en el sistema de carga.',
+    ],
+    repuestos: 'baterías y alternadores',
+    nota: null,
+  },
+  'r-luz-temp': {
+    sintoma: 'tiene prendida la luz de temperatura',
+    causas: [
+      'Nivel de refrigerante bajo, a veces por una pérdida chica.',
+      'Termostato o bomba de agua con problemas.',
+      'Radiador tapado o con pérdida.',
+    ],
+    repuestos: 'refrigerante, termostato y bomba de agua',
+    nota: 'Si la aguja de temperatura está muy alta, lo más seguro es frenar el auto y dejar enfriar el motor antes de seguir.',
+  },
+  'r-luz-aceite': {
+    sintoma: 'tiene prendida la luz de presión de aceite',
+    causas: [
+      'Nivel de aceite bajo.',
+      'Filtro de aceite muy tapado, que no deja circular bien el aceite.',
+      'Bomba de aceite con problemas (menos común, pero más grave).',
+    ],
+    repuestos: 'aceite y filtro de aceite',
+    nota: 'Con esta luz encendida, lo más seguro es apagar el motor apenas puedas: seguir andando con mala lubricación puede dañar el motor.',
+  },
+  'r-arranque-nada': {
+    sintoma: 'no arranca, no hace nada',
+    causas: [
+      'Batería descargada o al final de su vida útil.',
+      'Bornes de la batería sucios o flojos.',
+      'Motor de arranque (burro de arranque) con problemas.',
+    ],
+    repuestos: 'baterías y motores de arranque',
+    nota: null,
+  },
+  'r-arranque-gira': {
+    sintoma: 'gira pero no prende',
+    causas: [
+      'Bujías gastadas o sin chispa.',
+      'Filtro de combustible tapado.',
+      'Problema en el sistema de encendido (bobina).',
+    ],
+    repuestos: 'bujías y filtros de combustible',
+    nota: null,
+  },
+  'r-arranque-corta': {
+    sintoma: 'arranca y se apaga enseguida',
+    causas: [
+      'Marcha mínima inestable, muchas veces por el cuerpo de aceleración sucio.',
+      'Filtro de aire muy tapado.',
+      'Alguna pérdida de vacío o sensor con falla.',
+    ],
+    repuestos: 'filtros de aire',
+    nota: null,
+  },
+  'r-manejo-frenar': {
+    sintoma: 'vibra al frenar',
+    causas: [
+      'Discos de freno alabeados (deformados por el calor y el uso).',
+      'Pastillas desgastadas de forma despareja.',
+    ],
+    repuestos: 'discos y pastillas de freno',
+    nota: null,
+  },
+  'r-manejo-tira': {
+    sintoma: 'tira para un costado al manejar',
+    causas: [
+      'Alineación desactualizada.',
+      'Rótula o extremo de dirección con juego de un lado.',
+      'Neumáticos con presión o desgaste distinto entre ruedas.',
+    ],
+    repuestos: 'rótulas y extremos de dirección',
+    nota: null,
+  },
+  'r-manejo-volante': {
+    sintoma: 'hace vibrar el volante en ruta',
+    causas: [
+      'Ruedas desbalanceadas.',
+      'Amortiguadores gastados.',
+      'Rodamiento de rueda con juego.',
+    ],
+    repuestos: 'amortiguadores y rodamientos',
+    nota: null,
+  },
+  'r-manejo-tiron': {
+    sintoma: 'tironea o pierde fuerza al acelerar',
+    causas: [
+      'Bujías gastadas — la causa más común de este síntoma.',
+      'Bobina de encendido fallando.',
+      'Filtro de combustible o de aire tapado.',
+    ],
+    repuestos: 'bujías y bobinas de encendido',
+    nota: null,
+  },
+  'r-consumo-azul': {
+    sintoma: 'larga humo azulado',
+    causas: [
+      'El motor puede estar quemando aceite, por retenes o segmentos gastados.',
+      'Es un síntoma que conviene revisar pronto, porque suele ir empeorando con el uso.',
+    ],
+    repuestos: null,
+    nota: null,
+  },
+  'r-consumo-blanco': {
+    sintoma: 'larga humo blanco espeso',
+    causas: [
+      'Puede ser una pérdida de refrigerante entrando a la cámara de combustión (por ejemplo, junta de culata).',
+      'Es una falla seria: seguir manejando así puede terminar de arruinar el motor.',
+    ],
+    repuestos: null,
+    nota: 'Si el humo blanco es denso y persistente, lo más seguro es no seguir viaje y consultar antes de volver a arrancar el auto.',
+  },
+  'r-consumo-negro': {
+    sintoma: 'larga humo negro',
+    causas: [
+      'Mezcla de combustible más rica de lo normal, muchas veces por el filtro de aire tapado.',
+      'Inyectores sucios o con falla.',
+    ],
+    repuestos: 'filtros de aire',
+    nota: null,
+  },
+  'r-consumo-nafta': {
+    sintoma: 'está consumiendo más nafta de lo normal',
+    causas: [
+      'Bujías gastadas, que hacen que la combustión sea menos eficiente.',
+      'Filtro de aire sucio.',
+      'Neumáticos con baja presión.',
+    ],
+    repuestos: 'bujías y filtros de aire',
+    nota: null,
+  },
+};
+
+const faqs = [
+  {
+    pregunta: '¿Cada cuánto se cambia el aceite y el filtro?',
+    respuesta: 'Cada 10.000 km o una vez al año, lo que ocurra primero. Siempre van juntos: aceite nuevo con filtro nuevo.',
+    link: '/blog/service-10000-km/',
+  },
+  {
+    pregunta: '¿Cada cuánto se cambia la correa de distribución?',
+    respuesta: 'Entre 60.000 y 100.000 km, o cada 4 a 5 años, según el auto y el motor.',
+    link: '/blog/correa-distribucion-cada-cuanto/',
+  },
+  {
+    pregunta: '¿Cada cuánto se cambian las bujías?',
+    respuesta: 'Las de cobre cada 20.000-30.000 km; las de platino o iridio pueden durar hasta 100.000 km.',
+    link: '/blog/sintomas-bujias-gastadas/',
+  },
+  {
+    pregunta: '¿Cómo sé si la batería está por fallar?',
+    respuesta: 'Si el motor de arranque gira más lento, las luces titilan al arrancar, o ya tiene más de 3 años, conviene revisarla antes de que te deje a pie.',
+    link: '/blog/bateria-auto-invierno/',
+  },
+  {
+    pregunta: '¿Qué refrigerante usa mi auto?',
+    respuesta: 'Depende de la tecnología que use el fabricante (orgánico o inorgánico) — no alcanza con guiarse por el color.',
+    link: '/blog/refrigerante-que-usa-mi-auto/',
+  },
+  {
+    pregunta: '¿Qué incluye un service completo?',
+    respuesta: 'Como mínimo, aceite y filtro, revisión del filtro de aire, frenos, niveles y una inspección visual de correas y suspensión.',
+    link: '/blog/service-10000-km/',
+  },
+];
+
+const schemaFAQ = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.pregunta,
+    acceptedAnswer: { '@type': 'Answer', text: f.respuesta },
+  })),
+};
+---
+<Base
+  titulo={`Diagnóstico: detectá los problemas de tu auto | ${negocio.nombre}`}
+  descripcion="Guía orientativa para entender qué puede estar pasando con tu auto, según el síntoma. No reemplaza una revisión real — siempre te derivamos a confirmar por WhatsApp o en el local."
+>
+  <Header />
+  <script type="application/ld+json" set:html={JSON.stringify(schemaFAQ)} />
+  <main class="diag-main">
+    <div class="diag-head">
+      <h1>Detectá los problemas</h1>
+      <p class="diag-sub">Respondé un par de preguntas y te contamos qué puede estar pasando. Es una guía orientativa, no reemplaza que veamos el auto — al final siempre te proponemos confirmarlo por WhatsApp o en el local.</p>
+    </div>
+
+    <section class="diag-guia-wrap" aria-labelledby="diag-guia-titulo">
+      <h2 id="diag-guia-titulo" class="sr-only">Guía de diagnóstico interactiva</h2>
+      <div class="diag-guia-card">
+        <div class="diag-guia">
+          {Object.entries(preguntas).map(([id, p]) => (
+            <div class="diag-paso" data-paso={id} hidden={id !== 'inicio'}>
+              <h3 class="diag-pregunta" tabindex="-1">{p.texto}</h3>
+              <div class="diag-opciones">
+                {p.opciones.map((o) => (
+                  <button type="button" class="diag-opcion" data-ir={o.ir}>{o.label}</button>
+                ))}
+              </div>
+              {id !== 'inicio' && (
+                <div class="diag-nav">
+                  <button type="button" class="diag-atras" data-atras>← Atrás</button>
+                </div>
+              )}
+            </div>
+          ))}
+
+          {Object.entries(resultados).map(([id, r]) => {
+            const wa = linkWA({ whatsapp: negocio.whatsapp, mensaje: `Hola JBD, mi auto ${r.sintoma}, ¿me ayudan a ver qué puede ser?` });
+            return (
+              <div class="diag-paso diag-resultado" data-paso={id} hidden>
+                <h3 class="diag-pregunta" tabindex="-1">Esto es lo que puede estar pasando</h3>
+                {r.nota && <p class="diag-alerta">⚠️ {r.nota}</p>}
+                <ul class="diag-causas">
+                  {r.causas.map((c) => <li>{c}</li>)}
+                </ul>
+                {r.repuestos && (
+                  <p class="diag-repuestos">Los repuestos que más se asocian a esto son <strong>{r.repuestos}</strong>, pero no lo afirmamos sin ver el auto.</p>
+                )}
+                <p class="diag-disclaimer">Esto es orientativo, no un diagnóstico. Para confirmarlo, acercate al mostrador o escribinos por WhatsApp.</p>
+                <div class="diag-acciones">
+                  {r.repuestos && (
+                    <a class="diag-btn diag-btn-secundario" href="/catalogo/">Ver repuestos en el catálogo</a>
+                  )}
+                  <a class="diag-btn diag-btn-whatsapp" href={wa} target="_blank" rel="noopener noreferrer" data-wa="diagnostico">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+                    Consultar por WhatsApp
+                  </a>
+                </div>
+                <div class="diag-nav">
+                  <button type="button" class="diag-atras" data-atras>← Atrás</button>
+                  <button type="button" class="diag-reiniciar" data-reiniciar>Volver a empezar</button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+
+    <section class="diag-faq">
+      <h2>Preguntas frecuentes de mantenimiento</h2>
+      <div class="diag-faq-lista">
+        {faqs.map((f) => (
+          <div class="diag-faq-item">
+            <h3>{f.pregunta}</h3>
+            <p>{f.respuesta} <a href={f.link}>Leé la nota completa →</a></p>
+          </div>
+        ))}
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>
+
+<script is:inline>
+  (function () {
+    const guia = document.querySelector('.diag-guia');
+    if (!guia) return;
+
+    const pasos = guia.querySelectorAll('.diag-paso');
+    let historial = ['inicio'];
+
+    function mostrar(id) {
+      pasos.forEach(function (p) { p.hidden = p.dataset.paso !== id; });
+      const actual = guia.querySelector('[data-paso="' + id + '"]');
+      if (actual) {
+        const titulo = actual.querySelector('.diag-pregunta');
+        if (titulo) titulo.focus();
+        actual.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+
+    guia.addEventListener('click', function (e) {
+      const irBtn = e.target.closest('[data-ir]');
+      if (irBtn) {
+        historial.push(irBtn.dataset.ir);
+        mostrar(irBtn.dataset.ir);
+        return;
+      }
+      const atrasBtn = e.target.closest('[data-atras]');
+      if (atrasBtn) {
+        if (historial.length > 1) historial.pop();
+        mostrar(historial[historial.length - 1]);
+        return;
+      }
+      const reiniciarBtn = e.target.closest('[data-reiniciar]');
+      if (reiniciarBtn) {
+        historial = ['inicio'];
+        mostrar('inicio');
+      }
+    });
+  })();
+</script>
+
+<style>
+  .diag-main { max-width: 860px; margin: 0 auto; padding: var(--esp-8) var(--esp-4) var(--esp-16); }
+  .diag-head h1 { margin: 0 0 var(--esp-2); font-size: var(--texto-display); }
+  .diag-sub { color: var(--color-texto-secundario); max-width: 60ch; margin: 0 0 var(--esp-8); }
+
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+  .diag-guia-wrap { margin-bottom: var(--esp-12); }
+  .diag-guia-card { background: var(--superficie-card); border: 1px solid var(--borde-card); border-radius: var(--radio-lg); padding: var(--esp-6); }
+
+  .diag-pregunta { font-size: var(--texto-h3); margin: 0 0 var(--esp-4); outline: none; }
+  .diag-opciones { display: flex; flex-wrap: wrap; gap: var(--esp-2); }
+  .diag-opcion {
+    min-height: 44px;
+    padding: 10px 18px;
+    border-radius: var(--radio-pill);
+    border: 1px solid var(--color-borde-fuerte);
+    background: transparent;
+    color: var(--color-texto-primario);
+    font-family: var(--fuente-texto);
+    font-size: var(--texto-sm);
+    font-weight: var(--peso-semibold);
+    cursor: pointer;
+    transition: border-color .12s, background .12s, color .12s;
+  }
+  .diag-opcion:hover { border-color: var(--color-marca); }
+
+  .diag-causas { margin: 0 0 var(--esp-4); padding-left: 1.2em; color: var(--color-texto-primario); }
+  .diag-causas li { margin-bottom: var(--esp-2); }
+  .diag-repuestos { color: var(--color-texto-secundario); margin: 0 0 var(--esp-4); }
+  .diag-repuestos strong { color: var(--color-texto-primario); }
+  .diag-alerta { background: var(--color-stock-pedido-tinte); border: 1px solid var(--color-stock-pedido); color: var(--color-texto-primario); border-radius: var(--radio-md); padding: var(--esp-3) var(--esp-4); margin: 0 0 var(--esp-4); font-size: var(--texto-sm); }
+  .diag-disclaimer { font-size: var(--texto-xs); color: var(--color-texto-terciario); margin: 0 0 var(--esp-5); }
+
+  .diag-acciones { display: flex; flex-wrap: wrap; gap: var(--esp-3); margin-bottom: var(--esp-5); }
+  .diag-btn { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: var(--radio-md); font-family: var(--fuente-texto); font-size: var(--texto-sm); font-weight: var(--peso-semibold); text-decoration: none; }
+  .diag-btn-secundario { border: 1px solid var(--color-borde-fuerte); color: var(--color-texto-primario); }
+  .diag-btn-secundario:hover { border-color: var(--color-marca); text-decoration: none; }
+  .diag-btn-whatsapp { color: var(--color-whatsapp-texto); background: var(--color-whatsapp); }
+  .diag-btn-whatsapp:hover { background: var(--color-whatsapp-hover); text-decoration: none; }
+
+  .diag-nav { display: flex; gap: var(--esp-4); padding-top: var(--esp-4); border-top: 1px solid var(--borde-card); }
+  .diag-atras, .diag-reiniciar { min-height: 44px; padding: 0 4px; background: transparent; border: none; color: var(--color-texto-secundario); font-family: var(--fuente-texto); font-size: var(--texto-sm); font-weight: var(--peso-semibold); cursor: pointer; }
+  .diag-atras:hover, .diag-reiniciar:hover { color: var(--color-marca-texto); }
+  .diag-reiniciar { margin-left: auto; }
+
+  .diag-faq h2 { font-size: var(--texto-h2); margin: 0 0 var(--esp-5); }
+  .diag-faq-lista { display: flex; flex-direction: column; gap: var(--esp-5); }
+  .diag-faq-item { padding-bottom: var(--esp-5); border-bottom: 1px solid var(--borde-card); }
+  .diag-faq-item:last-child { border-bottom: none; }
+  .diag-faq-item h3 { font-size: var(--texto-cuerpo-lg); margin: 0 0 var(--esp-2); }
+  .diag-faq-item p { color: var(--color-texto-secundario); margin: 0; }
+  .diag-faq-item a { color: var(--color-marca-texto); font-weight: var(--peso-semibold); white-space: nowrap; }
+
+  @media (max-width: 640px) {
+    .diag-opcion { flex: 1 1 calc(50% - var(--esp-2)); text-align: center; }
+    .diag-acciones { flex-direction: column; align-items: stretch; }
+    .diag-btn { justify-content: center; }
+    .diag-nav { flex-wrap: wrap; }
+  }
+</style>
