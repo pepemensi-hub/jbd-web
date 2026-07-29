@@ -10,7 +10,7 @@ const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRVHx81KqfGCu2n
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const SALIDA = join(__dirname, '..', 'src', 'data', 'stock.json');
 
-const CATEGORIAS_VALIDAS = ['filtros', 'correas', 'frenos', 'encendido', 'suspension', 'refrigeracion', 'electricidad'];
+const CATEGORIAS_VALIDAS = ['filtros', 'correas', 'frenos', 'encendido', 'suspension', 'refrigeracion', 'electricidad', 'inyeccion', 'transmision', 'direccion', 'escape', 'aire-acondicionado', 'tren-delantero'];
 const ESTADOS_VALIDOS = ['disponible', 'pedido', 'agotado'];
 
 console.log('Descargando planilla...');

@@ -12,6 +12,12 @@ const categorias = [
   { id: 'suspension', label: 'Suspensión' },
   { id: 'refrigeracion', label: 'Refrigeración' },
   { id: 'electricidad', label: 'Electricidad' },
+  { id: 'inyeccion', label: 'Inyección' },
+  { id: 'transmision', label: 'Transmisión' },
+  { id: 'direccion', label: 'Dirección' },
+  { id: 'escape', label: 'Escape' },
+  { id: 'aire-acondicionado', label: 'Aire acondicionado' },
+  { id: 'tren-delantero', label: 'Tren delantero' },
 ];
 const catConProductos = categorias.filter(c => productos.some(p => p.categoria === c.id));
 ---
