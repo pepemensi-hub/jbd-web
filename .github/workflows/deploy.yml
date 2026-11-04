@@ -18,6 +18,27 @@ jobs:
       - uses: withastro/action@v3
         with:
           node-version: 22
+  # Hostinger publica la rama tal cual (no compila Astro): acá se compila el sitio
+  # y se deja el contenido de dist/ en la rama `hostinger`, que es la que despliega Hostinger.
+  hostinger:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          publish_branch: hostinger
+          force_orphan: true
+          commit_message: "Sitio compilado para Hostinger"
   deploy:
     needs: build
     environment:
