@@ -2,8 +2,28 @@
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import CatalogoGrid from '../components/CatalogoGrid.astro';
 import Orientador from '../components/Orientador.astro';
+import ProductCard from '../components/ProductCard.astro';
+import stock from '../data/stock.json';
+
+const destacados = stock.productos.slice(0, 8);
+
+const categorias = [
+  { id: 'filtros', label: 'Filtros' },
+  { id: 'correas', label: 'Correas' },
+  { id: 'frenos', label: 'Frenos' },
+  { id: 'suspension', label: 'Suspensión' },
+  { id: 'refrigeracion', label: 'Refrigeración' },
+  { id: 'electricidad', label: 'Electricidad' },
+  { id: 'inyeccion', label: 'Inyección' },
+  { id: 'encendido', label: 'Encendido' },
+  { id: 'transmision', label: 'Transmisión' },
+  { id: 'direccion', label: 'Dirección' },
+  { id: 'escape', label: 'Escape' },
+  { id: 'aire-acondicionado', label: 'Aire acondicionado' },
+];
+
+const totalProductos = stock.productos.length;
 ---
 <Base
   titulo="JBD Repuestos en Belén de Escobar | Autopartes y filtros"
@@ -21,19 +41,60 @@ import Orientador from '../components/Orientador.astro';
         <span class="hero-kicker">Belén de Escobar · Zona Norte</span>
         <h1 class="hero-titulo">En Escobar los repuestos están en <span class="acento">JBD</span>.</h1>
         <p class="hero-sub">Filtros, correas, baterías, frenos y más. Mirá el catálogo, consultá stock y precio, y cerrá por WhatsApp.</p>
-        <a href="#catalogo" class="hero-scroll">Ver catálogo ↓</a>
+        <a href="/catalogo/" class="hero-scroll">Ver catálogo completo →</a>
+      </div>
+    </section>
+
+    <section class="buscador-home">
+      <div class="buscador-inner">
+        <p class="buscador-frase">Tienda online con más de {totalProductos.toLocaleString('es-AR')} productos cargados</p>
+        <form class="buscador-form" action="/catalogo/" method="get" role="search">
+          <div class="buscador-input-wrap">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="search" name="q" placeholder="Buscar por nombre, marca, modelo o código…" aria-label="Buscar en el catálogo" autocomplete="off" />
+          </div>
+          <button type="submit" class="buscador-btn">Buscar</button>
+        </form>
       </div>
     </section>
 
     <Orientador />
 
-    <section class="cat-seccion" id="catalogo">
-      <div class="cat-seccion-head">
-        <h2>Catálogo</h2>
-        <p>Filtrá por marca, tipo o disponibilidad.</p>
+    <section class="destacados">
+      <div class="dest-head">
+        <h2>Algunos repuestos del catálogo</h2>
+        <p>Una muestra chica. Tenemos más de {totalProductos.toLocaleString('es-AR')} productos en stock.</p>
       </div>
-      <CatalogoGrid />
+      <div class="dest-grid">
+        {destacados.map((p) => (
+          <ProductCard
+            sku={p.sku}
+            nombre={p.nombre}
+            marca={p.marca}
+            modelos={p.modelos}
+            precio={p.precio}
+            estado={p.estado}
+            imagen={p.imagen}
+          />
+        ))}
+      </div>
     </section>
+
+    <section class="cats">
+      <div class="cats-head">
+        <h2>Explorá por categoría</h2>
+        <p>Elegí la categoría que buscás y filtrá por marca y modelo.</p>
+      </div>
+      <div class="cats-grid">
+        {categorias.map((c) => (
+          <a href={`/catalogo/#${c.id}`} class="cat-card">
+            <span class="cat-label">{c.label}</span>
+            <span class="cat-arrow">→</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
   </main>
   <Footer />
 </Base>
@@ -46,10 +107,43 @@ import Orientador from '../components/Orientador.astro';
   .hero-titulo { font-size: 52px; font-weight: var(--peso-black); line-height: 1.02; margin-bottom: var(--esp-5); }
   .hero-titulo .acento { color: var(--color-marca); }
   .hero-sub { font-size: var(--texto-cuerpo-lg); color: var(--color-texto-primario); max-width: 52ch; margin: 0 auto var(--esp-8); opacity: 0.9; }
-  .hero-scroll { display: inline-flex; align-items: center; min-height: 52px; padding: 14px 28px; font-family: var(--fuente-texto); font-size: var(--texto-cuerpo-lg); font-weight: var(--peso-bold); color: var(--color-texto-primario); border: 1px solid var(--color-texto-secundario); border-radius: var(--radio-md); }
-  .hero-scroll:hover { background: rgba(255,255,255,0.1); text-decoration: none; }
-  .cat-seccion { max-width: 1180px; margin: 0 auto; padding: var(--esp-12) var(--esp-4) var(--esp-16); scroll-margin-top: 70px; }
-  .cat-seccion-head h2 { font-size: var(--texto-display); margin-bottom: var(--esp-2); }
-  .cat-seccion-head p { color: var(--color-texto-secundario); margin-bottom: var(--esp-6); }
+  .hero-scroll { display: inline-flex; align-items: center; min-height: 52px; padding: 14px 28px; font-family: var(--fuente-texto); font-size: var(--texto-cuerpo-lg); font-weight: var(--peso-bold); color: var(--color-texto-primario); background: var(--color-marca); border-radius: var(--radio-md); }
+  .hero-scroll:hover { background: var(--color-marca-hover); text-decoration: none; }
+
+  .buscador-home { max-width: 1180px; margin: 0 auto; padding: var(--esp-12) var(--esp-4) 0; }
+  .buscador-inner { text-align: center; }
+  .buscador-frase { font-family: var(--fuente-display); font-size: var(--texto-h2, 28px); font-weight: var(--peso-bold); color: var(--color-texto-primario); margin: 0 auto var(--esp-5); max-width: 720px; line-height: 1.15; }
+  .buscador-form { display: flex; gap: var(--esp-3); max-width: 720px; margin: 0 auto; }
+  .buscador-input-wrap { flex: 1; display: flex; align-items: center; gap: 10px; background: var(--superficie-input, #1a1a1e); border: 1px solid var(--color-borde-fuerte); border-radius: var(--radio-md); padding: 0 18px; min-height: 64px; color: var(--color-texto-terciario); transition: border-color .12s; }
+  .buscador-input-wrap:focus-within { border-color: var(--color-marca); }
+  .buscador-input-wrap input { flex: 1; border: 0; outline: 0; background: transparent; font-family: var(--fuente-texto); font-size: var(--texto-cuerpo-lg); color: var(--color-texto-primario); min-width: 0; }
+  .buscador-btn { flex-shrink: 0; min-height: 64px; padding: 0 var(--esp-6); font-family: var(--fuente-texto); font-size: var(--texto-cuerpo-lg); font-weight: var(--peso-bold); color: var(--color-texto-primario); background: var(--color-marca); border: none; border-radius: var(--radio-md); cursor: pointer; transition: background .12s; }
+  .buscador-btn:hover { background: var(--color-marca-hover); }
+  @media (max-width: 640px) {
+    .buscador-frase { font-size: 22px; }
+    .buscador-form { flex-direction: column; }
+    .buscador-input-wrap { min-height: 56px; }
+    .buscador-btn { min-height: 56px; width: 100%; }
+  }
+
+  .destacados, .cats { max-width: 1180px; margin: 0 auto; padding: var(--esp-12) var(--esp-4); }
+  .dest-head, .cats-head { margin-bottom: var(--esp-6); }
+  .dest-head h2, .cats-head h2 { font-size: var(--texto-display); margin-bottom: var(--esp-2); }
+  .dest-head p, .cats-head p { color: var(--color-texto-secundario); margin: 0; }
+  .dest-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--esp-4); }
+
+  .cats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--esp-3); }
+  .cat-card { display: flex; align-items: center; justify-content: space-between; padding: var(--esp-4) var(--esp-5); background: var(--superficie-card); border: 1px solid var(--borde-card); border-radius: var(--radio-md); color: var(--color-texto-primario); text-decoration: none; transition: border-color .12s, transform .12s; }
+  .cat-card:hover { border-color: var(--color-marca); transform: translateY(-2px); text-decoration: none; }
+  .cat-label { font-family: var(--fuente-display); font-weight: var(--peso-bold); font-size: var(--texto-cuerpo-lg); }
+  .cat-arrow { color: var(--color-marca); font-weight: var(--peso-bold); }
+
+  .cta-catalogo { max-width: 1180px; margin: 0 auto var(--esp-16); padding: 0 var(--esp-4); }
+  .cta-inner { background: var(--superficie-card); border: 1px solid var(--borde-card); border-radius: var(--radio-lg); padding: var(--esp-12) var(--esp-6); text-align: center; }
+  .cta-inner h2 { font-size: var(--texto-display); margin-bottom: var(--esp-2); }
+  .cta-inner p { color: var(--color-texto-secundario); margin-bottom: var(--esp-6); }
+  .cta-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 54px; padding: 14px 36px; font-family: var(--fuente-texto); font-size: var(--texto-cuerpo-lg); font-weight: var(--peso-bold); color: var(--color-texto-primario); background: var(--color-marca); border-radius: var(--radio-md); text-decoration: none; }
+  .cta-btn:hover { background: var(--color-marca-hover); text-decoration: none; }
+
   @media (max-width: 640px) { .hero-titulo { font-size: 36px; } .hero { min-height: 68vh; } }
 </style>

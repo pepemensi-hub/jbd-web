@@ -7,7 +7,7 @@ const telLimpio = negocio.telefono.replace(/\s/g, '');
     <span class="logo-nombre">JBD<span class="logo-punto">.</span></span>
     <span class="logo-sub">Repuestos</span>
   </a>
-  <nav class="nav">
+  <nav class="nav" id="nav-desktop">
     <a href="/catalogo/">Catálogo</a>
     <a href="/diagnostico/">Diagnóstico</a>
     <a href="/servicios/">Taller Mecánico</a>
@@ -22,8 +22,53 @@ const telLimpio = negocio.telefono.replace(/\s/g, '');
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
       <span class="header-carrito-count" id="header-carrito-count" hidden>0</span>
     </button>
+    <button id="header-menu" class="header-menu" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav-mobile">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
   </div>
 </header>
+
+<div id="nav-mobile-overlay" class="nav-mobile-overlay" hidden></div>
+<aside id="nav-mobile" class="nav-mobile" hidden aria-label="Menú principal">
+  <div class="nav-mobile-head">
+    <span class="nav-mobile-titulo">Menú</span>
+    <button id="nav-mobile-cerrar" class="nav-mobile-cerrar" aria-label="Cerrar menú">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <nav class="nav-mobile-links">
+    <a href="/catalogo/">Catálogo</a>
+    <a href="/diagnostico/">Diagnóstico</a>
+    <a href="/servicios/">Taller Mecánico</a>
+    <a href="/blog/">Blog</a>
+    <a href="/contacto/">Contacto</a>
+  </nav>
+</aside>
+
+<script is:inline>
+  (function () {
+    const btn = document.getElementById('header-menu');
+    const panel = document.getElementById('nav-mobile');
+    const overlay = document.getElementById('nav-mobile-overlay');
+    const cerrar = document.getElementById('nav-mobile-cerrar');
+    if (!btn || !panel || !overlay) return;
+    function abrir() {
+      panel.hidden = false; overlay.hidden = false;
+      btn.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+    }
+    function cerrarMenu() {
+      panel.hidden = true; overlay.hidden = true;
+      btn.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    }
+    btn.addEventListener('click', abrir);
+    cerrar.addEventListener('click', cerrarMenu);
+    overlay.addEventListener('click', cerrarMenu);
+    panel.querySelectorAll('a').forEach(a => a.addEventListener('click', cerrarMenu));
+  })();
+</script>
+
 <style>
   .site-header { display: flex; align-items: center; gap: var(--esp-4); padding: var(--esp-3) var(--esp-4); background: var(--superficie-card); border-bottom: 1px solid var(--borde-card); position: sticky; top: 0; z-index: 50; }
   .logo { display: inline-flex; align-items: baseline; gap: 7px; font-family: var(--fuente-display); line-height: 1; text-decoration: none; flex-shrink: 0; }
@@ -35,10 +80,29 @@ const telLimpio = negocio.telefono.replace(/\s/g, '');
   .nav a { color: var(--color-texto-secundario); font-family: var(--fuente-texto); font-size: var(--texto-sm); font-weight: var(--peso-semibold); text-transform: uppercase; letter-spacing: var(--tracking-label); }
   .nav a:hover { color: var(--color-texto-primario); text-decoration: none; }
   .header-acciones { display: flex; align-items: center; gap: var(--esp-2); }
-  .header-tel { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: var(--radio-md); border: 1px solid var(--color-borde-fuerte); color: var(--color-texto-secundario); flex-shrink: 0; }
+  .header-tel, .header-carrito, .header-menu { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: var(--radio-md); border: 1px solid var(--color-borde-fuerte); background: transparent; color: var(--color-texto-primario); flex-shrink: 0; }
+  .header-tel { color: var(--color-texto-secundario); }
   .header-tel:hover { color: var(--color-texto-primario); text-decoration: none; }
-  .header-carrito { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: var(--radio-md); border: 1px solid var(--color-borde-fuerte); background: transparent; color: var(--color-texto-primario); cursor: pointer; flex-shrink: 0; transition: border-color .12s; }
+  .header-carrito { position: relative; cursor: pointer; transition: border-color .12s; }
   .header-carrito:hover { border-color: var(--color-texto-primario); }
   .header-carrito-count { position: absolute; top: -6px; right: -6px; min-width: 20px; height: 20px; padding: 0 5px; border-radius: var(--radio-pill); background: var(--color-marca); color: var(--color-texto-sobre-marca); font-family: var(--fuente-texto); font-size: 11px; font-weight: var(--peso-bold); display: inline-flex; align-items: center; justify-content: center; border: 2px solid var(--superficie-card); }
-  @media (max-width: 640px) { .nav { display: none; } }
+  .header-menu { display: none; cursor: pointer; }
+
+  .nav-mobile-overlay { position: fixed; inset: 0; z-index: 95; background: var(--color-overlay, rgba(0,0,0,0.6)); }
+  .nav-mobile { position: fixed; top: 0; right: 0; z-index: 96; width: 300px; max-width: 88vw; height: 100vh; background: var(--superficie-card); border-left: 1px solid var(--borde-card); display: flex; flex-direction: column; }
+  .nav-mobile[hidden] { display: none; }
+  .nav-mobile-head { display: flex; align-items: center; justify-content: space-between; padding: var(--esp-4) var(--esp-5); border-bottom: 1px solid var(--borde-card); }
+  .nav-mobile-titulo { font-family: var(--fuente-display); font-weight: var(--peso-bold); text-transform: uppercase; letter-spacing: var(--tracking-label); color: var(--color-texto-primario); }
+  .nav-mobile-cerrar { background: transparent; border: none; color: var(--color-texto-secundario); cursor: pointer; display: flex; }
+  .nav-mobile-cerrar:hover { color: var(--color-texto-primario); }
+  .nav-mobile-links { display: flex; flex-direction: column; padding: var(--esp-3) 0; }
+  .nav-mobile-links a { padding: var(--esp-4) var(--esp-5); color: var(--color-texto-primario); font-family: var(--fuente-texto); font-size: var(--texto-cuerpo-lg); font-weight: var(--peso-semibold); text-decoration: none; border-bottom: 1px solid var(--borde-card); }
+  .nav-mobile-links a:hover { background: rgba(255,255,255,0.05); text-decoration: none; }
+
+  @media (max-width: 900px) {
+    .nav { display: none; }
+    .header-menu { display: inline-flex; }
+    .header-tel { display: none; }
+    .header-acciones { margin-left: auto; }
+  }
 </style>

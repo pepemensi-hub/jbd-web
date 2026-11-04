@@ -1,11 +1,6 @@
 ---
 import negocio from '../data/negocio.json';
 ---
-<button id="carrito-fab" class="carrito-fab" aria-label="Ver pedido" hidden>
-  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
-  <span class="carrito-fab-count" id="carrito-count">0</span>
-</button>
-
 <div id="carrito-toast" class="carrito-toast" role="status" aria-live="polite" hidden>
   <span class="toast-check">
     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
@@ -41,8 +36,8 @@ import negocio from '../data/negocio.json';
 <script is:inline define:vars={{ wa: negocio.whatsapp }}>
   (function () {
     const KEY = 'jbd_carrito_v1';
-    const fab = document.getElementById('carrito-fab');
-    const count = document.getElementById('carrito-count');
+    const headerBtn = document.getElementById('header-carrito');
+    const headerCount = document.getElementById('header-carrito-count');
     const panel = document.getElementById('carrito-panel');
     const overlay = document.getElementById('carrito-overlay');
     const cerrar = document.getElementById('carrito-cerrar');
@@ -63,8 +58,10 @@ import negocio from '../data/negocio.json';
 
     function render() {
       const items = leer();
-      count.textContent = items.length;
-      fab.hidden = items.length === 0;
+      if (headerCount) {
+        headerCount.textContent = items.length;
+        headerCount.hidden = items.length === 0;
+      }
       if (items.length === 0) {
         vacio.hidden = false; foot.hidden = true; cont.innerHTML = '';
       } else {
@@ -113,7 +110,7 @@ import negocio from '../data/negocio.json';
     }
     toast.addEventListener('click', function () { ocultarToast(); abrir(); });
 
-    fab.addEventListener('click', abrir);
+    if (headerBtn) headerBtn.addEventListener('click', abrir);
     cerrar.addEventListener('click', cerrarPanel);
     overlay.addEventListener('click', cerrarPanel);
 
@@ -151,9 +148,6 @@ import negocio from '../data/negocio.json';
 </script>
 
 <style>
-  .carrito-fab { position: fixed; bottom: 24px; right: 24px; z-index: 90; display: inline-flex; align-items: center; justify-content: center; width: 60px; height: 60px; border-radius: var(--radio-pill); border: none; background: var(--color-marca); color: var(--color-texto-sobre-marca); cursor: pointer; box-shadow: var(--sombra-elevada); }
-  .carrito-fab:hover { background: var(--color-marca-hover); }
-  .carrito-fab-count { position: absolute; top: -4px; right: -4px; min-width: 24px; height: 24px; padding: 0 6px; border-radius: var(--radio-pill); background: var(--color-superficie-alta); color: var(--color-texto-primario); font-family: var(--fuente-texto); font-size: var(--texto-xs); font-weight: var(--peso-bold); display: inline-flex; align-items: center; justify-content: center; border: 2px solid var(--color-fondo-base); }
   .carrito-overlay { position: fixed; inset: 0; z-index: 95; background: var(--color-overlay); }
   .carrito-panel { position: fixed; top: 0; right: 0; z-index: 96; width: 400px; max-width: 92vw; height: 100vh; background: #FFFFFF; border-left: 1px solid #E8E8EA; display: flex; flex-direction: column; }
   .carrito-panel[hidden] { display: none; }

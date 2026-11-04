@@ -5,8 +5,10 @@ import { linkWA } from '../lib/whatsapp.js';
 interface Props {
   sku: string; nombre: string; marca: string; modelos?: string[];
   precio: number | null; estado?: 'disponible' | 'pedido' | 'agotado';
+  imagen?: string | null;
 }
-const { sku, nombre, marca, modelos = [], precio, estado = 'disponible' } = Astro.props;
+const { sku, nombre, marca, modelos = [], precio, estado = 'disponible', imagen = null } = Astro.props;
+const imgUrl = imagen ? `https://lh3.googleusercontent.com/d/${imagen}=w400` : null;
 const agotado = estado === 'agotado';
 const precioFmt = precio != null ? '$ ' + precio.toLocaleString('es-AR') : 'Consultar';
 const compat = modelos.length ? `${marca} ${modelos.join(', ')}` : marca;
@@ -16,7 +18,9 @@ const precioAttr = precio == null ? '' : String(precio);
 ---
 <article class={clase}>
   <div class="card-img">
-    <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg>
+    {imgUrl
+      ? <img src={imgUrl} alt={nombre} loading="lazy" decoding="async" width="400" height="300" referrerpolicy="no-referrer" />
+      : <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg>}
   </div>
   <div class="card-body">
     <div class="card-top">
@@ -35,10 +39,12 @@ const precioAttr = precio == null ? '' : String(precio);
     </div>
   </div>
 </article>
-<style>
+<style is:global>
+  /* Global: el catálogo arma estas tarjetas en el cliente (CatalogoGrid) */
   .card { display: flex; flex-direction: column; background: var(--superficie-card); border: 1px solid var(--borde-card); border-radius: var(--radio-md); overflow: hidden; box-shadow: var(--sombra-card); }
   .card.agotado { opacity: 0.85; }
-  .card-img { aspect-ratio: 4/3; background: var(--color-superficie-alta); display: flex; align-items: center; justify-content: center; color: var(--color-texto-terciario); }
+  .card-img { aspect-ratio: 4/3; background: var(--color-superficie-alta); display: flex; align-items: center; justify-content: center; color: var(--color-texto-terciario); overflow: hidden; }
+  .card-img img { width: 100%; height: 100%; object-fit: contain; background: #fff; }
   .card-body { padding: var(--esp-4); display: flex; flex-direction: column; gap: var(--esp-3); }
   .card-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
   .card-marca { font-size: var(--texto-xs); letter-spacing: var(--tracking-label); text-transform: uppercase; color: var(--color-texto-secundario); margin-bottom: 2px; }

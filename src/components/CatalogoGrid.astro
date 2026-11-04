@@ -1,8 +1,13 @@
 ---
+// Los productos (~37.000 con foto) se cargan desde /catalogo.json y se dibujan en el cliente
+// de a tandas; las tarjetas replican el markup de ProductCard.astro (sus estilos son globales).
 import ProductCard from './ProductCard.astro';
+import StockBadge from './StockBadge.astro';
 import stock from '../data/stock.json';
+import negocio from '../data/negocio.json';
 
 const productos = stock.productos;
+const urlDatos = import.meta.env.BASE_URL.replace(/\/?$/, '/') + 'catalogo.json';
 const marcas = [...new Set(productos.map(p => p.marca))].sort();
 const categorias = [
   { id: 'filtros', label: 'Filtros' },
@@ -18,6 +23,9 @@ const categorias = [
   { id: 'escape', label: 'Escape' },
   { id: 'aire-acondicionado', label: 'Aire acondicionado' },
   { id: 'tren-delantero', label: 'Tren delantero' },
+  { id: 'motor', label: 'Motor' },
+  { id: 'carroceria', label: 'Carrocería y accesorios' },
+  { id: 'otros', label: 'Otros' },
 ];
 const catConProductos = categorias.filter(c => productos.some(p => p.categoria === c.id));
 ---
@@ -54,13 +62,21 @@ const catConProductos = categorias.filter(c => productos.some(p => p.categoria =
 
   <div class="cat-resultados">
     <div class="cat-contador"><span id="contador">{productos.length}</span> resultados</div>
-    <div class="cat-grid" id="grid">
-      {productos.map(p => (
-        <div class="grid-item" data-marca={p.marca} data-categoria={p.categoria} data-estado={p.estado} data-buscar={`${p.nombre} ${p.marca} ${p.modelos.join(' ')} ${p.sku}`.toLowerCase()}>
-          <ProductCard sku={p.sku} nombre={p.nombre} marca={p.marca} modelos={p.modelos} precio={p.precio} estado={p.estado} />
+    <div class="cat-grid" id="grid" data-url={urlDatos} data-wa={negocio.whatsapp}>
+      {productos.slice(0, 24).map(p => (
+        <div class="grid-item">
+          <ProductCard sku={p.sku} nombre={p.nombre} marca={p.marca} modelos={p.modelos} precio={p.precio} estado={p.estado} imagen={p.imagen} />
         </div>
       ))}
     </div>
+    <div class="cat-mas">
+      <button type="button" class="cat-mas-btn" id="ver-mas" hidden>Ver más repuestos</button>
+    </div>
+    <template id="tpl-badges">
+      <StockBadge estado="disponible" />
+      <StockBadge estado="pedido" />
+      <StockBadge estado="agotado" />
+    </template>
     <div class="cat-vacio" id="vacio" hidden>
       <p>No encontramos repuestos con esos filtros.</p>
       <p class="cat-vacio-sub">Probá con otra búsqueda o consultanos directamente.</p>
@@ -70,27 +86,81 @@ const catConProductos = categorias.filter(c => productos.some(p => p.categoria =
 
 <script is:inline>
   (function () {
+    const POR_TANDA = 48;
+    const IMG = 'https://lh3.googleusercontent.com/d/';
+
     const estado = { categoria: '', marca: '', estado: '', q: '' };
     const grid = document.getElementById('grid');
-    const items = Array.from(grid.querySelectorAll('.grid-item'));
     const contador = document.getElementById('contador');
     const vacio = document.getElementById('vacio');
     const input = document.getElementById('q');
+    const verMas = document.getElementById('ver-mas');
+    const whatsapp = grid.dataset.wa;
+
+    // Badges (del template) e ícono de WhatsApp (de la primera tarjeta que renderizó Astro),
+    // para no duplicar su markup acá.
+    const badges = {};
+    document.getElementById('tpl-badges').content.querySelectorAll('.badge').forEach(function (b, i) {
+      badges[['disponible', 'pedido', 'agotado'][i]] = b.outerHTML;
+    });
+    const primeraCta = grid.querySelector('.card-cta');
+    const iconoWA = primeraCta ? primeraCta.innerHTML : 'WhatsApp';
+
+    let todos = null; // [{ sku, nombre, marca, fab, cat, est, img, buscar }]
+    let filtrados = [];
+    let mostrados = 0;
+
+    const MAPA_ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+    const esc = function (s) { return String(s).replace(/[&<>"']/g, function (c) { return MAPA_ESC[c]; }); };
+    const sinAcentos = function (s) { return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); };
+
+    function linkWA(p) {
+      const texto = 'Hola JBD, quiero consultar por: ' + p.nombre + ' (cód. ' + p.sku + ')';
+      return 'https://wa.me/' + whatsapp + '?text=' + encodeURIComponent(texto);
+    }
+
+    function tarjeta(p) {
+      const agotado = p.est === 'agotado';
+      const img = p.img
+        ? '<img src="' + IMG + esc(p.img) + '=w400" alt="' + esc(p.nombre) + '" loading="lazy" decoding="async" width="400" height="300" referrerpolicy="no-referrer">'
+        : '';
+      return '<div class="grid-item"><article class="' + (agotado ? 'card agotado' : 'card') + '">' +
+        '<div class="card-img">' + img + '</div>' +
+        '<div class="card-body">' +
+          '<div class="card-top">' + (badges[p.est] || badges.disponible) + '</div>' +
+          '<div><div class="card-marca">' + esc(p.marca) + (p.fab ? ' · ' + esc(p.fab) : '') + '</div>' +
+          '<h3 class="card-nombre">' + esc(p.nombre) + '</h3></div>' +
+          '<div class="card-precio">Consultar</div>' +
+          '<div class="card-acciones">' +
+            '<button class="card-agregar" data-agregar data-sku="' + esc(p.sku) + '" data-nombre="' + esc(p.nombre) + '" data-compat="' + esc(p.marca) + '" data-precio=""' + (agotado ? ' hidden' : '') + '>Agregar</button>' +
+            '<a class="card-cta" href="' + esc(linkWA(p)) + '" target="_blank" rel="noopener noreferrer" data-wa="catalogo" data-sku="' + esc(p.sku) + '" aria-label="Consultar por WhatsApp">' + iconoWA + '</a>' +
+          '</div>' +
+        '</div></article></div>';
+    }
+
+    function dibujarTanda() {
+      const tanda = filtrados.slice(mostrados, mostrados + POR_TANDA);
+      grid.insertAdjacentHTML('beforeend', tanda.map(tarjeta).join(''));
+      mostrados += tanda.length;
+      verMas.hidden = mostrados >= filtrados.length;
+    }
 
     function aplicar() {
-      let visibles = 0;
-      items.forEach(function (it) {
-        const okCat = !estado.categoria || it.dataset.categoria === estado.categoria;
-        const okMarca = !estado.marca || it.dataset.marca === estado.marca;
-        const okEstado = !estado.estado || it.dataset.estado === estado.estado;
-        const okQ = !estado.q || it.dataset.buscar.indexOf(estado.q) !== -1;
-        const mostrar = okCat && okMarca && okEstado && okQ;
-        it.style.display = mostrar ? '' : 'none';
-        if (mostrar) visibles++;
+      if (!todos) return;
+      const palabras = sinAcentos(estado.q).split(/\s+/).filter(Boolean);
+      filtrados = todos.filter(function (p) {
+        if (estado.categoria && p.cat !== estado.categoria) return false;
+        if (estado.marca && p.marca !== estado.marca) return false;
+        if (estado.estado && p.est !== estado.estado) return false;
+        for (let i = 0; i < palabras.length; i++) if (p.buscar.indexOf(palabras[i]) === -1) return false;
+        return true;
       });
-      contador.textContent = visibles;
-      vacio.hidden = visibles !== 0;
-      grid.hidden = visibles === 0;
+      grid.innerHTML = '';
+      mostrados = 0;
+      dibujarTanda();
+      contador.textContent = filtrados.length.toLocaleString('es-AR');
+      vacio.hidden = filtrados.length !== 0;
+      grid.hidden = filtrados.length === 0;
     }
 
     document.querySelectorAll('.chips').forEach(function (grupo) {
@@ -109,10 +179,31 @@ const catConProductos = categorias.filter(c => productos.some(p => p.categoria =
     input.addEventListener('input', function () {
       clearTimeout(t);
       t = setTimeout(function () {
-        estado.q = input.value.trim().toLowerCase();
+        estado.q = input.value.trim();
         aplicar();
-      }, 120);
+      }, 150);
     });
+
+    verMas.addEventListener('click', dibujarTanda);
+
+    const qInit = new URLSearchParams(location.search).get('q');
+    if (qInit) {
+      input.value = qInit;
+      estado.q = qInit.trim();
+    }
+
+    fetch(grid.dataset.url)
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function (datos) {
+        todos = datos.productos.map(function (a) {
+          return {
+            sku: a[0], nombre: a[1], marca: a[2], fab: a[3], cat: a[4], est: a[5], img: a[6],
+            buscar: sinAcentos(a[1] + ' ' + a[2] + ' ' + a[3] + ' ' + a[0] + ' ' + a[0].replace(/[^a-z0-9]/gi, '')),
+          };
+        });
+        aplicar();
+      })
+      .catch(function (err) { console.error('No se pudo cargar el catálogo', err); });
   })();
 </script>
 
@@ -127,6 +218,9 @@ const catConProductos = categorias.filter(c => productos.some(p => p.categoria =
   .chip:hover { border-color: var(--color-marca); color: var(--color-texto-primario); }
   .chip.activo { background: var(--color-marca); border-color: var(--color-marca); color: var(--color-texto-sobre-marca); }
   .cat-contador { font-size: var(--texto-sm); color: var(--color-texto-secundario); margin-bottom: var(--esp-4); }
+  .cat-mas { display: flex; justify-content: center; margin-top: var(--esp-8); }
+  .cat-mas-btn { font-family: var(--fuente-texto); font-size: var(--texto-cuerpo); font-weight: var(--peso-semibold); min-height: 48px; padding: 12px 28px; border-radius: var(--radio-md); border: 1px solid var(--color-borde-fuerte); background: transparent; color: var(--color-texto-primario); cursor: pointer; }
+  .cat-mas-btn:hover { border-color: var(--color-marca); }
   .cat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--esp-5); }
   .cat-vacio { text-align: center; padding: var(--esp-16) var(--esp-4); }
   .cat-vacio-sub { color: var(--color-texto-secundario); font-size: var(--texto-sm); }
