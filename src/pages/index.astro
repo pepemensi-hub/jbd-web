@@ -6,13 +6,17 @@ import Orientador from '../components/Orientador.astro';
 import GoogleBanner from '../components/GoogleBanner.astro';
 import ProductoLista from '../components/ProductoLista.astro';
 import IconoWASprite from '../components/IconoWASprite.astro';
+import StockBadge from '../components/StockBadge.astro';
+import negocio from '../data/negocio.json';
 import stock from '../data/stock.json';
-import { marcas, productos as productosOrdenados, muestra } from '../lib/catalogo.js';
+import { marcas } from '../lib/catalogo.js';
+import { ordenHome } from '../lib/ordenHome.js';
 
-// 10 páginas de 8 productos variados (se pasan con el paginador, sin recargar)
+// "Algunos repuestos del catálogo": todo el catálogo de a 8, paginado.
+// La página 1 viene en el HTML; el script del final arma las demás con el mismo ordenHome.
 const POR_PAGINA = 8;
-const destacados = muestra(productosOrdenados, POR_PAGINA * 10, 'categoria');
-const paginasDest = Array.from({ length: Math.ceil(destacados.length / POR_PAGINA) }, (_, i) => destacados.slice(i * POR_PAGINA, (i + 1) * POR_PAGINA));
+const destacados = ordenHome(stock.productos, (p) => [p.marca, p.categoria, p.estado]).slice(0, POR_PAGINA);
+const totalPaginas = Math.ceil(stock.productos.length / POR_PAGINA);
 
 const categorias = [
   { id: 'filtros', label: 'Filtros' },
@@ -88,29 +92,25 @@ const totalProductos = stock.productos.length;
         <p>Una muestra chica. Tenemos más de {totalProductos.toLocaleString('es-AR')} productos en stock.</p>
       </div>
       <IconoWASprite />
-      {paginasDest.map((pag, i) => (
-        <div class="dest-grid dest-pagina" data-pagina={i + 1} hidden={i > 0}>
-          {pag.map((p) => <ProductoLista p={p} />)}
-        </div>
-      ))}
+      <template id="tpl-dest-badges">
+        <span data-estado="disponible"><StockBadge estado="disponible" /></span>
+        <span data-estado="pedido"><StockBadge estado="pedido" /></span>
+      </template>
+      <div class="dest-grid" id="dest-grid" data-wa={negocio.whatsapp} data-por-pagina={POR_PAGINA}>
+        {destacados.map((p) => <ProductoLista p={p} />)}
+      </div>
 
-      <!-- Paginador estilo Google: JB + una D por página + el punto rojo del logo -->
-      <nav class="dest-paginador" aria-label="Páginas de productos" data-total={paginasDest.length}>
-        <div class="pg-col pg-extremo">
-          <span class="pg-letra" aria-hidden="true">JB</span>
-          <button type="button" class="pg-num pg-ant" data-ir="ant" disabled>‹ Anterior</button>
-        </div>
-        {paginasDest.map((_, i) => (
-          <div class="pg-col">
-            <span class={i === 0 ? 'pg-letra pg-actual' : 'pg-letra'} aria-hidden="true">D</span>
+      <!-- Paginador estilo Google: ‹ Anterior · ventana de números que se corre · Siguiente › -->
+      <nav class="dest-paginador" aria-label="Páginas de productos" data-total={totalPaginas}>
+        <button type="button" class="pg-num pg-ant" data-ir="ant" disabled>‹ Anterior</button>
+        <span class="pg-nums">
+          {Array.from({ length: Math.min(10, totalPaginas) }, (_, i) => (
             <button type="button" class="pg-num" data-ir={i + 1} aria-label={`Página ${i + 1}`} aria-current={i === 0 ? 'page' : undefined}>{i + 1}</button>
-          </div>
-        ))}
-        <div class="pg-col pg-extremo">
-          <span class="pg-letra pg-punto" aria-hidden="true">.</span>
-          <button type="button" class="pg-num pg-sig" data-ir="sig">Siguiente ›</button>
-        </div>
+          ))}
+        </span>
+        <button type="button" class="pg-num pg-sig" data-ir="sig">Siguiente ›</button>
       </nav>
+      <p class="pg-info" aria-live="polite">Página <span id="pg-actual">1</span> de {totalPaginas.toLocaleString('es-AR')}</p>
       <p class="dest-todo"><a href="/catalogo/">Ver los {totalProductos.toLocaleString('es-AR')} productos en el catálogo →</a></p>
     </section>
 
@@ -186,27 +186,20 @@ const totalProductos = stock.productos.length;
   .dest-head h2, .cats-head h2 { font-size: var(--texto-display); margin-bottom: var(--esp-2); }
   .dest-head p, .cats-head p { color: var(--color-texto-secundario); margin: 0; }
   .dest-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--esp-4); }
-  .dest-grid[hidden] { display: none; }
+  .dest-grid { transition: opacity .15s; }
+  .dest-grid.cargando { opacity: .4; pointer-events: none; }
+  .pg-nums { display: inline-flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
+  .pg-info { text-align: center; margin: var(--esp-3) 0 0; font-size: var(--texto-sm); color: var(--color-texto-terciario); }
 
-  .dest-paginador { display: flex; justify-content: center; align-items: flex-end; gap: 2px; margin-top: var(--esp-10, 40px); }
-  .pg-col { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-  .pg-letra { font-family: var(--fuente-display); font-weight: var(--peso-black); font-size: 34px; line-height: 1; color: var(--color-texto-primario); transition: color .15s; }
-  .pg-letra.pg-actual, .pg-punto { color: var(--color-marca); }
-  .pg-extremo .pg-letra { letter-spacing: -0.02em; }
-  .pg-extremo:first-child { align-items: flex-end; }
-  .pg-extremo:last-child { align-items: flex-start; }
-  .pg-num { min-width: 34px; min-height: 40px; padding: 0 6px; border: 0; background: transparent; color: var(--color-marca-texto); font-family: var(--fuente-texto); font-size: var(--texto-cuerpo); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
-  .pg-num:hover { color: var(--color-texto-primario); }
-  .pg-num[aria-current] { color: var(--color-texto-primario); font-weight: var(--peso-bold); text-decoration: none; cursor: default; }
-  .pg-num:disabled { visibility: hidden; }
+  .dest-paginador { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px; margin-top: var(--esp-10, 40px); }
+  .dest-paginador :global(.pg-num) { min-width: 34px; min-height: 40px; padding: 0 6px; border: 0; background: transparent; color: var(--color-marca-texto); font-family: var(--fuente-texto); font-size: var(--texto-cuerpo); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+  .dest-paginador :global(.pg-num:hover) { color: var(--color-texto-primario); }
+  .dest-paginador :global(.pg-num[aria-current]) { min-width: 40px; border-radius: 999px; background: var(--color-marca); color: var(--color-texto-sobre-marca); font-weight: var(--peso-bold); text-decoration: none; cursor: default; }
+  .dest-paginador :global(.pg-num):disabled { visibility: hidden; }
   .pg-ant, .pg-sig { white-space: nowrap; font-weight: var(--peso-semibold); }
   .dest-todo { text-align: center; margin: var(--esp-5) 0 0; font-weight: var(--peso-bold); }
   @media (max-width: 640px) {
-    .pg-letra { font-size: 22px; }
-    .pg-num { min-width: 26px; padding: 0 2px; font-size: var(--texto-sm); }
-    .pg-ant, .pg-sig { font-size: 0; }
-    .pg-ant::before { content: '‹'; font-size: 22px; }
-    .pg-sig::before { content: '›'; font-size: 22px; }
+    .dest-paginador :global(.pg-num) { min-width: 26px; padding: 0 2px; font-size: var(--texto-sm); }
   }
 
   .cats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--esp-3); }
@@ -230,30 +223,99 @@ const totalProductos = stock.productos.length;
   @media (max-width: 640px) { .hero-titulo { font-size: 36px; } .hero { min-height: 68vh; } }
 </style>
 <script>
-  // Paginador de "Algunos repuestos del catálogo": muestra una página y marca su D en rojo
+  // Paginador de "Algunos repuestos del catálogo": recorre todo el catálogo de a 8.
+  // La página 1 viene en el HTML; al pasar de página se baja /catalogo.json (una sola vez)
+  // y las tarjetas se arman acá con el mismo markup que ProductoLista.astro.
+  import { ordenHome } from '../lib/ordenHome.js';
+  type Prod = [string, string, string, string, string, string, string]; // sku, nombre, marca, fabricante, categoria, estado, imagen
   const nav = document.querySelector<HTMLElement>('.dest-paginador');
-  if (nav) {
+  const grid = document.getElementById('dest-grid');
+  if (nav && grid) {
     const total = Number(nav.dataset.total);
-    const paginas = document.querySelectorAll<HTMLElement>('.dest-pagina');
-    const nums = nav.querySelectorAll<HTMLButtonElement>('.pg-num[data-ir]:not(.pg-ant):not(.pg-sig)');
-    const letras = nav.querySelectorAll<HTMLElement>('.pg-col:not(.pg-extremo) .pg-letra');
+    const porPagina = Number(grid.dataset.porPagina);
+    const wa = grid.dataset.wa!;
+    const numsBox = nav.querySelector<HTMLElement>('.pg-nums')!;
     const ant = nav.querySelector<HTMLButtonElement>('.pg-ant')!;
     const sig = nav.querySelector<HTMLButtonElement>('.pg-sig')!;
-    let actual = 1;
-    const ir = (n: number) => {
-      actual = Math.min(Math.max(n, 1), total);
-      paginas.forEach((p) => (p.hidden = Number(p.dataset.pagina) !== actual));
-      nums.forEach((b, i) => (i + 1 === actual ? b.setAttribute('aria-current', 'page') : b.removeAttribute('aria-current')));
-      letras.forEach((l, i) => l.classList.toggle('pg-actual', i + 1 === actual));
+    const info = document.getElementById('pg-actual')!;
+    const tpl = document.getElementById('tpl-dest-badges') as HTMLTemplateElement;
+    const badge = (estado: string) =>
+      (tpl.content.querySelector(`[data-estado="${estado}"]`) || tpl.content.querySelector('[data-estado="disponible"]'))!.innerHTML;
+    const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
+
+    // Mismo orden que la página 1 del servidor
+    const ordenar = (lista: Prod[]): Prod[] => ordenHome(lista, (p: Prod) => [p[2], p[4], p[5]]);
+
+    let productos: Prod[] | null = null;
+    let cargando: Promise<Prod[]> | null = null;
+    const cargar = () =>
+      (cargando ??= fetch('/catalogo.json').then((r) => r.json()).then((d) => (productos = ordenar(d.productos))));
+
+    const tarjeta = ([sku, nombre, marca, fabricante, , estado, imagen]: Prod) => {
+      const texto = `Hola JBD, quiero consultar por: ${nombre} (cód. ${sku})`;
+      return `<article class="card">
+        <div class="card-img">${imagen ? `<img src="https://lh3.googleusercontent.com/d/${esc(imagen)}=w400" alt="${esc(nombre)}" loading="lazy" decoding="async" width="400" height="300" referrerpolicy="no-referrer">` : ''}</div>
+        <div class="card-body">
+          <div class="card-top">${badge(estado)}</div>
+          <div>
+            <div class="card-marca">${esc(marca)}${fabricante ? ' · ' + esc(fabricante) : ''}</div>
+            <h3 class="card-nombre">${esc(nombre)}</h3>
+            <div class="card-sku">Cód. ${esc(sku)}</div>
+          </div>
+          <div class="card-precio card-precio-consultar">Precio a consultar</div>
+          <div class="card-acciones">
+            <button class="card-agregar" data-agregar data-sku="${esc(sku)}" data-nombre="${esc(nombre)}" data-compat="${esc(marca)}" data-precio="">Agregar</button>
+            <a class="card-cta" href="https://wa.me/${wa}?text=${encodeURIComponent(texto)}" target="_blank" rel="noopener noreferrer nofollow" data-wa="home" aria-label="Consultar ${esc(nombre)} por WhatsApp"><svg width="20" height="20" aria-hidden="true"><use href="#ico-wa"></use></svg></a>
+          </div>
+        </div>
+      </article>`;
+    };
+
+    // Ventana de números estilo Google: hasta 10 (5 en celular) alrededor de la página actual
+    const dibujarNumeros = (actual: number) => {
+      const ancho = window.matchMedia('(max-width: 640px)').matches ? 5 : 10;
+      let desde = Math.max(1, actual - Math.floor(ancho / 2));
+      const hasta = Math.min(total, desde + ancho - 1);
+      desde = Math.max(1, hasta - ancho + 1);
+      let html = '';
+      for (let n = desde; n <= hasta; n++) {
+        html += `<button type="button" class="pg-num" data-ir="${n}" aria-label="Página ${n}"${n === actual ? ' aria-current="page"' : ''}>${n.toLocaleString('es-AR')}</button>`;
+      }
+      numsBox.innerHTML = html;
       ant.disabled = actual === 1;
       sig.disabled = actual === total;
-      document.querySelector('.destacados')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      info.textContent = actual.toLocaleString('es-AR');
     };
+
+    let actual = 1;
+    dibujarNumeros(1); // en celular la ventana es de 5 números
+    const ir = async (n: number) => {
+      actual = Math.min(Math.max(n, 1), total);
+      dibujarNumeros(actual);
+      document.querySelector('.destacados')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      grid.classList.add('cargando');
+      const pedida = actual;
+      try {
+        const lista = productos || (await cargar());
+        if (pedida !== actual) return; // mientras cargaba, la persona pidió otra página
+        grid.innerHTML = lista.slice((actual - 1) * porPagina, actual * porPagina).map(tarjeta).join('');
+      } catch {
+        cargando = null;
+        grid.innerHTML = '<p>No pudimos cargar los productos. <a href="/catalogo/">Abrí el catálogo</a>.</p>';
+      } finally {
+        grid.classList.remove('cargando');
+      }
+    };
+
     nav.addEventListener('click', (e) => {
       const b = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-ir]');
       if (!b || b.disabled) return;
       const v = b.dataset.ir;
       ir(v === 'ant' ? actual - 1 : v === 'sig' ? actual + 1 : Number(v));
     });
+    // Empieza a bajar el catálogo cuando el paginador se acerca a la pantalla, para que el cambio sea instantáneo
+    new IntersectionObserver((entradas, obs) => {
+      if (entradas.some((e) => e.isIntersecting)) { cargar().catch(() => (cargando = null)); obs.disconnect(); }
+    }, { rootMargin: '400px' }).observe(nav);
   }
 </script>
