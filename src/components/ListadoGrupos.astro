@@ -1,0 +1,27 @@
+---
+interface Enlace { label: string; url: string; total?: number; activo?: boolean }
+interface Props { grupos: { titulo: string; enlaces: Enlace[] }[] }
+const { grupos } = Astro.props;
+---
+{grupos.filter((g) => g.enlaces.length).map((g) => (
+  <section class="lst-grupo">
+    <h2>{g.titulo}</h2>
+    <div class="lst-chips">
+      {g.enlaces.map((e) => (
+        <a href={e.url} class={e.activo ? 'lst-chip activo' : 'lst-chip'} aria-current={e.activo ? 'page' : undefined}>
+          {e.label}{e.total != null && <span class="lst-total">{e.total.toLocaleString('es-AR')}</span>}
+        </a>
+      ))}
+    </div>
+  </section>
+))}
+<style>
+  .lst-grupo { margin-bottom: var(--esp-8); }
+  .lst-grupo h2 { font-size: var(--texto-h3); margin: 0 0 var(--esp-3); }
+  .lst-chips { display: flex; flex-wrap: wrap; gap: var(--esp-2); }
+  .lst-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 16px; border: 1px solid var(--borde-card); border-radius: 999px; background: var(--superficie-card); color: var(--color-texto-primario); font-weight: var(--peso-semibold); text-decoration: none; transition: border-color .12s; }
+  .lst-chip:hover { border-color: var(--color-marca); text-decoration: none; }
+  .lst-chip.activo { border-color: var(--color-marca); background: var(--color-marca); color: var(--color-texto-sobre-marca); }
+  .lst-total { font-size: var(--texto-xs); font-weight: 400; color: var(--color-texto-terciario); }
+  .lst-chip.activo .lst-total { color: inherit; opacity: .85; }
+</style>

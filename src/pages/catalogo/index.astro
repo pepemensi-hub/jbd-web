@@ -3,6 +3,7 @@ import Base from '../../layouts/Base.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import CatalogoGrid from '../../components/CatalogoGrid.astro';
+import { categorias, marcas } from '../../lib/catalogo.js';
 ---
 <Base
   titulo="Catálogo de repuestos | JBD Repuestos Escobar"
@@ -15,6 +16,16 @@ import CatalogoGrid from '../../components/CatalogoGrid.astro';
       <p class="cat-sub">Filtrá por marca, tipo o disponibilidad.</p>
     </div>
     <CatalogoGrid />
+
+    <section class="cat-explorar">
+      <h2>Explorá los repuestos por tipo y por marca</h2>
+      <div class="cat-explorar-links">
+        {categorias.map((c) => <a href={`/repuestos/${c.id}/`}>{c.label}</a>)}
+      </div>
+      <div class="cat-explorar-links">
+        {marcas.map((m) => <a href={`/marcas/${m.slug}/`}>{m.nombre === 'Universal' ? 'Repuestos universales' : `Repuestos para ${m.nombre}`}</a>)}
+      </div>
+    </section>
   </main>
   <Footer />
 </Base>
@@ -22,4 +33,9 @@ import CatalogoGrid from '../../components/CatalogoGrid.astro';
   .cat-main { max-width: 1180px; margin: 0 auto; padding: var(--esp-8) var(--esp-4) var(--esp-16); }
   .cat-head h1 { margin: 0 0 var(--esp-2); font-size: var(--texto-display); }
   .cat-sub { color: var(--color-texto-secundario); margin: 0 0 var(--esp-6); }
+  .cat-explorar { margin-top: var(--esp-12); padding-top: var(--esp-8); border-top: 1px solid var(--borde-card); }
+  .cat-explorar h2 { font-size: var(--texto-h3); margin: 0 0 var(--esp-4); }
+  .cat-explorar-links { display: flex; flex-wrap: wrap; gap: var(--esp-2) var(--esp-5); margin-bottom: var(--esp-4); font-size: var(--texto-sm); }
+  .cat-explorar-links a { color: var(--color-texto-secundario); }
+  .cat-explorar-links a:hover { color: var(--color-marca-texto); }
 </style>

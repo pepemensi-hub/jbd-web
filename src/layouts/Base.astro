@@ -9,9 +9,13 @@ import AsistenteChat from '../components/AsistenteChat.astro';
 interface Props {
   titulo: string;
   descripcion: string;
+  /** Ruta canónica; por defecto la de la página actual */
+  canonica?: string;
 }
 
-const { titulo, descripcion } = Astro.props;
+const { titulo, descripcion, canonica } = Astro.props;
+// Siempre apunta al dominio principal (sin www), aunque el sitio se sirva desde otro lado.
+const urlCanonica = new URL(canonica ?? Astro.url.pathname, Astro.site).href;
 // En el sitio de prueba (QA) se compila con PUBLIC_ENTORNO=qa: no se indexa en Google.
 const esQA = import.meta.env.PUBLIC_ENTORNO === 'qa';
 ---
@@ -24,11 +28,14 @@ const esQA = import.meta.env.PUBLIC_ENTORNO === 'qa';
     <title>{titulo}</title>
     <meta name="description" content={descripcion} />
     {esQA && <meta name="robots" content="noindex, nofollow" />}
+    <link rel="canonical" href={urlCanonica} />
+    <meta property="og:url" content={urlCanonica} />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={titulo} />
     <meta property="og:description" content={descripcion} />
     <meta property="og:locale" content="es_AR" />
     <SchemaLocalBusiness />
+    <slot name="head" />
   </head>
   <body>
     <slot />

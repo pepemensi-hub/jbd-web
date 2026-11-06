@@ -6,6 +6,7 @@ import Orientador from '../components/Orientador.astro';
 import GoogleBanner from '../components/GoogleBanner.astro';
 import ProductCard from '../components/ProductCard.astro';
 import stock from '../data/stock.json';
+import { marcas } from '../lib/catalogo.js';
 
 const destacados = stock.productos.slice(0, 8);
 
@@ -96,11 +97,18 @@ const totalProductos = stock.productos.length;
       </div>
       <div class="cats-grid">
         {categorias.map((c) => (
-          <a href={`/catalogo/#${c.id}`} class="cat-card">
+          <a href={`/repuestos/${c.id}/`} class="cat-card">
             <span class="cat-label">{c.label}</span>
             <span class="cat-arrow">→</span>
           </a>
         ))}
+      </div>
+      <h3 class="cats-sub">Repuestos por marca</h3>
+      <div class="marcas-fila">
+        {marcas.map((m) => (
+          <a href={`/marcas/${m.slug}/`} class="marca-chip">{m.nombre === 'Universal' ? 'Universales' : m.nombre}</a>
+        ))}
+        <a href="/repuestos/" class="marca-chip marca-chip-todos">Ver todo →</a>
       </div>
     </section>
 
@@ -158,6 +166,11 @@ const totalProductos = stock.productos.length;
   .cat-card:hover { border-color: var(--color-marca); transform: translateY(-2px); text-decoration: none; }
   .cat-label { font-family: var(--fuente-display); font-weight: var(--peso-bold); font-size: var(--texto-cuerpo-lg); }
   .cat-arrow { color: var(--color-marca); font-weight: var(--peso-bold); }
+  .cats-sub { font-size: var(--texto-h3); margin: var(--esp-8) 0 var(--esp-3); }
+  .marcas-fila { display: flex; flex-wrap: wrap; gap: var(--esp-2); }
+  .marca-chip { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 18px; border: 1px solid var(--borde-card); border-radius: 999px; background: var(--superficie-card); color: var(--color-texto-primario); font-weight: var(--peso-semibold); text-decoration: none; transition: border-color .12s; }
+  .marca-chip:hover { border-color: var(--color-marca); text-decoration: none; }
+  .marca-chip-todos { color: var(--color-marca-texto); }
 
   .cta-catalogo { max-width: 1180px; margin: 0 auto var(--esp-16); padding: 0 var(--esp-4); }
   .cta-inner { background: var(--superficie-card); border: 1px solid var(--borde-card); border-radius: var(--radio-lg); padding: var(--esp-12) var(--esp-6); text-align: center; }

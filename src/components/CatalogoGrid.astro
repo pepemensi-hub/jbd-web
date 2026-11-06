@@ -197,6 +197,9 @@ const catConProductos = categorias.filter(c => productos.some(p => p.categoria =
       input.value = qInit;
       estado.q = qInit.trim();
     }
+    // Links viejos tipo /catalogo/#filtros también filtran por categoría
+    const hash = decodeURIComponent(location.hash.slice(1));
+    if (hash && !params.get('cat')) params.set('cat', hash);
     ['marca', 'cat'].forEach(function (clave) {
       const val = params.get(clave);
       if (!val) return;

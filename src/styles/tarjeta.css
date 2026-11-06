@@ -1,0 +1,16 @@
+/* Tarjeta de producto: la usan ProductCard, ProductoLista y el catálogo (que arma tarjetas en el cliente) */
+  /* Global: el catálogo arma estas tarjetas en el cliente (CatalogoGrid) */
+  .card { display: flex; flex-direction: column; background: var(--superficie-card); border: 1px solid var(--borde-card); border-radius: var(--radio-md); overflow: hidden; box-shadow: var(--sombra-card); }
+  .card.agotado { opacity: 0.85; }
+  .card-img { aspect-ratio: 4/3; background: var(--color-superficie-alta); display: flex; align-items: center; justify-content: center; color: var(--color-texto-terciario); overflow: hidden; }
+  .card-img img { width: 100%; height: 100%; object-fit: contain; background: #fff; }
+  .card-body { padding: var(--esp-4); display: flex; flex-direction: column; gap: var(--esp-3); }
+  .card-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .card-marca { font-size: var(--texto-xs); letter-spacing: var(--tracking-label); text-transform: uppercase; color: var(--color-texto-secundario); margin-bottom: 2px; }
+  .card-nombre { margin: 0; font-family: var(--fuente-display); font-size: var(--texto-h3); font-weight: var(--peso-bold); color: var(--texto-titulo); line-height: var(--interlinea-titulo); }
+  .card-precio { font-family: var(--fuente-display); font-size: var(--texto-display); font-weight: var(--peso-black); color: var(--color-marca); line-height: 1; font-variant-numeric: tabular-nums; }
+  .card-acciones { display: flex; gap: var(--esp-2); }
+  .card-agregar { flex: 1; min-height: 46px; padding: 12px 16px; font-family: var(--fuente-texto); font-size: var(--texto-cuerpo); font-weight: var(--peso-semibold); color: var(--color-texto-primario); background: transparent; border: 1px solid var(--color-borde-fuerte); border-radius: var(--radio-md); cursor: pointer; transition: all .12s; }
+  .card-agregar:hover { border-color: var(--color-marca); }
+  .card-cta { display: inline-flex; align-items: center; justify-content: center; width: 46px; min-height: 46px; flex-shrink: 0; color: var(--color-whatsapp-texto); background: var(--color-whatsapp); border-radius: var(--radio-md); text-decoration: none; transition: background .12s; }
+  .card-cta:hover { background: var(--color-whatsapp-hover); text-decoration: none; }

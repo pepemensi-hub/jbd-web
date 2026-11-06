@@ -1,0 +1,50 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Listado from '../../../../layouts/Listado.astro';
+import { categorias, marcas, deCategoria, paraMarca } from '../../../../lib/catalogo.js';
+
+export const getStaticPaths = (({ paginate }) =>
+  categorias.flatMap((c) => {
+    const lista = deCategoria(c.id);
+    return marcas.flatMap((m) => {
+      const items = lista.filter((p) => p.marca === m.nombre);
+      if (!items.length) return [];
+      return paginate(items, { pageSize: 96, params: { categoria: c.id, marca: m.slug }, props: { c, m, totalItems: items.length } });
+    });
+  })) satisfies GetStaticPaths;
+
+const { page, c, m, totalItems } = Astro.props;
+const base = `/repuestos/${c.id}/${m.slug}/`;
+// Las URLs del sitio terminan en "/" (build.format: directory)
+const conBarra = (u?: string) => (u ? u.replace(/\/?$/, '/') : undefined);
+const nombre = `${c.label} ${paraMarca(m.nombre)}`;
+const sufijoPag = page.currentPage > 1 ? ` (página ${page.currentPage})` : '';
+const total = totalItems.toLocaleString('es-AR');
+const ejemplos = page.data.slice(0, 3).map((p) => p.nombre.toLowerCase()).join(', ');
+const otrasMarcas = marcas
+  .filter((o) => o.slug !== m.slug && deCategoria(c.id).some((p) => p.marca === o.nombre))
+  .map((o) => ({ label: o.nombre, url: `/repuestos/${c.id}/${o.slug}/` }));
+const otrasCats = categorias
+  .filter((o) => o.id !== c.id && deCategoria(o.id).some((p) => p.marca === m.nombre))
+  .map((o) => ({ label: o.label, url: `/repuestos/${o.id}/${m.slug}/` }));
+---
+<Listado
+  titulo={`${nombre} en Escobar${sufijoPag} | JBD Repuestos`}
+  descripcion={`${total} productos de ${nombre.toLowerCase()}${sufijoPag}: ${ejemplos}. Repuestos en Belén de Escobar, consultá disponibilidad por WhatsApp.`}
+  h1={`${nombre}${sufijoPag}`}
+  intro={`${total} productos de ${c.label.toLowerCase()} ${paraMarca(m.nombre)} en JBD Repuestos, Belén de Escobar. Agregá lo que necesitás al pedido y te confirmamos disponibilidad y precio por WhatsApp.`}
+  migas={[
+    { nombre: 'Inicio', url: '/' },
+    { nombre: 'Repuestos', url: '/repuestos/' },
+    { nombre: c.label, url: `/repuestos/${c.id}/` },
+    { nombre: m.nombre, url: base },
+  ]}
+  productosPrimero
+  grupos={page.currentPage === 1 ? [
+    { titulo: `${c.label} de otras marcas`, enlaces: otrasMarcas },
+    { titulo: `Más repuestos ${paraMarca(m.nombre)}`, enlaces: otrasCats },
+  ] : []}
+  productos={page.data}
+  pagina={{ actual: page.currentPage, total: page.lastPage, anterior: conBarra(page.url.prev), siguiente: conBarra(page.url.next), base }}
+  verTodos={{ label: `Todos los repuestos ${paraMarca(m.nombre)}`, url: `/marcas/${m.slug}/` }}
+/>

@@ -1,0 +1,20 @@
+---
+import Listado from '../../layouts/Listado.astro';
+import { categorias, marcas, productos, muestra } from '../../lib/catalogo.js';
+
+const total = productos.length.toLocaleString('es-AR');
+---
+<Listado
+  titulo="Repuestos de auto por categoría y marca en Escobar | JBD Repuestos"
+  descripcion={`Más de ${total} repuestos de auto en Belén de Escobar: filtros, correas, frenos, suspensión, motor y más para Renault, Ford, Volkswagen, Chevrolet, Fiat, Peugeot y otras marcas.`}
+  h1="Repuestos de auto en Belén de Escobar"
+  intro={`Más de ${total} repuestos cargados, ordenados por tipo y por marca. Elegí lo que buscás, agregalo al pedido y te confirmamos disponibilidad por WhatsApp.`}
+  migas={[{ nombre: 'Inicio', url: '/' }, { nombre: 'Repuestos', url: '/repuestos/' }]}
+  grupos={[
+    { titulo: 'Por tipo de repuesto', enlaces: categorias.map((c) => ({ label: c.label, url: `/repuestos/${c.id}/`, total: c.total })) },
+    { titulo: 'Por marca de auto', enlaces: marcas.map((m) => ({ label: m.nombre, url: `/marcas/${m.slug}/`, total: m.total })) },
+  ]}
+  tituloProductos="Algunos repuestos en stock"
+  productos={muestra(productos, 24, 'categoria')}
+  verTodos={{ label: 'Ver el catálogo completo con buscador', url: '/catalogo/' }}
+/>

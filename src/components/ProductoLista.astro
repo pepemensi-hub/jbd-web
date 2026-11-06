@@ -1,0 +1,34 @@
+---
+// Tarjeta liviana para las páginas de categoría/marca (HTML que Google puede leer).
+// Usa los estilos globales de ProductCard; el ícono de WhatsApp sale de un <symbol id="ico-wa">
+// que define ListadoRepuestos una sola vez por página.
+import '../styles/tarjeta.css';
+import StockBadge from './StockBadge.astro';
+import negocio from '../data/negocio.json';
+import { linkWA } from '../lib/whatsapp.js';
+
+interface Props {
+  p: { sku: string; nombre: string; marca: string; fabricante?: string; estado?: 'disponible' | 'pedido' | 'agotado'; imagen?: string | null };
+}
+const { p } = Astro.props;
+const compat = p.marca;
+const waUrl = linkWA({ whatsapp: negocio.whatsapp, repuesto: p.nombre, sku: p.sku });
+---
+<article class="card">
+  <div class="card-img">
+    {p.imagen && <img src={`https://lh3.googleusercontent.com/d/${p.imagen}=w400`} alt={p.nombre} loading="lazy" decoding="async" width="400" height="300" referrerpolicy="no-referrer" />}
+  </div>
+  <div class="card-body">
+    <div class="card-top"><StockBadge estado={p.estado} /></div>
+    <div>
+      <div class="card-marca">{compat}{p.fabricante ? ` · ${p.fabricante}` : ''}</div>
+      <h3 class="card-nombre">{p.nombre}</h3>
+      <div class="card-sku">Cód. {p.sku}</div>
+    </div>
+    <div class="card-precio card-precio-consultar">Precio a consultar</div>
+    <div class="card-acciones">
+      <button class="card-agregar" data-agregar data-sku={p.sku} data-nombre={p.nombre} data-compat={compat} data-precio="">Agregar</button>
+      <a class="card-cta" href={waUrl} target="_blank" rel="noopener noreferrer nofollow" data-wa="listado" aria-label={`Consultar ${p.nombre} por WhatsApp`}><svg width="20" height="20" aria-hidden="true"><use href="#ico-wa" /></svg></a>
+    </div>
+  </div>
+</article>

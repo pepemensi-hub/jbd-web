@@ -1,0 +1,4 @@
+# Hostinger: www.jbdrespuestos.com -> jbdrespuestos.com (una sola versión del sitio para Google)
+RewriteEngine On
+RewriteCond %{HTTP_HOST} ^www\.jbdrespuestos\.com$ [NC]
+RewriteRule ^(.*)$ https://jbdrespuestos.com/$1 [R=301,L]

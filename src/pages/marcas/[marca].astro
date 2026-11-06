@@ -1,0 +1,30 @@
+---
+import Listado from '../../layouts/Listado.astro';
+import { categorias, marcas, deMarca, muestra, paraMarca } from '../../lib/catalogo.js';
+
+export function getStaticPaths() {
+  return marcas.map((m) => ({ params: { marca: m.slug }, props: { m } }));
+}
+const { m } = Astro.props;
+const lista = deMarca(m.nombre);
+const porCat = categorias
+  .map((c) => ({ ...c, total: lista.filter((p) => p.categoria === c.id).length }))
+  .filter((c) => c.total > 0)
+  .sort((a, b) => b.total - a.total);
+const total = lista.length.toLocaleString('es-AR');
+const tipos = porCat.filter((c) => c.id !== 'otros').slice(0, 5).map((c) => c.label.toLowerCase()).join(', ');
+const titulo = m.nombre === 'Universal' ? 'Repuestos universales' : `Repuestos ${paraMarca(m.nombre)}`;
+---
+<Listado
+  titulo={`${titulo} en Escobar | JBD Repuestos`}
+  descripcion={`${total} repuestos ${paraMarca(m.nombre)} en Belén de Escobar: ${tipos} y más. Consultá disponibilidad por WhatsApp.`}
+  h1={titulo}
+  intro={`Tenemos ${total} repuestos ${paraMarca(m.nombre)} en JBD Repuestos, Belén de Escobar: ${tipos} y más. Elegí el tipo de repuesto para ver la lista completa.`}
+  migas={[{ nombre: 'Inicio', url: '/' }, { nombre: 'Repuestos', url: '/repuestos/' }, { nombre: m.nombre, url: `/marcas/${m.slug}/` }]}
+  grupos={[
+    { titulo: `Repuestos ${paraMarca(m.nombre)} por tipo`, enlaces: porCat.map((c) => ({ label: c.label, url: `/repuestos/${c.id}/${m.slug}/`, total: c.total })) },
+    { titulo: 'Otras marcas', enlaces: marcas.filter((o) => o.slug !== m.slug).map((o) => ({ label: o.nombre, url: `/marcas/${o.slug}/` })) },
+  ]}
+  tituloProductos={`Algunos repuestos ${paraMarca(m.nombre)}`}
+  productos={muestra(lista, 24, 'categoria')}
+/>
