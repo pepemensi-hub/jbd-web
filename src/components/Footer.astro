@@ -48,7 +48,7 @@ const anio = new Date().getFullYear();
 
   <div class="footer-bottom">
     <span>© {anio} {negocio.razonSocial}. Todos los derechos reservados.</span>
-    <span>Website desarrollada por <a href="https://agencia1989.com.ar/" target="_blank" rel="noopener">Agencia 1989</a></span>
+    <span class="footer-credito">Website desarrollada por <a href="https://agencia1989.com.ar/" target="_blank" rel="noopener">Agencia 1989</a></span>
   </div>
 </footer>
 
@@ -123,6 +123,7 @@ const anio = new Date().getFullYear();
     gap: var(--esp-2) var(--esp-6);
     padding-bottom: 72px; /* que el botón flotante de WhatsApp no tape el crédito */
   }
+  .footer-credito { font-size: calc(var(--texto-xs) * 2); }
   .footer-bottom a { color: var(--color-texto-secundario); text-decoration: underline; }
   .footer-bottom a:hover { color: var(--color-marca-texto); }
 
