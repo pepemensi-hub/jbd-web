@@ -1,0 +1,66 @@
+---
+// Franja de Google a todo el ancho: link a la ficha de Google de JBD (reseñas, mapa, horarios).
+// Va arriba del catálogo en la home y arriba del pie en el resto de las páginas.
+import negocio from '../data/negocio.json';
+---
+<section class="google-banner" aria-label="JBD Repuestos en Google">
+  <div class="gb-inner">
+    <svg class="gb-logo" viewBox="0 0 24 24" width="56" height="56" aria-hidden="true">
+      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z"/>
+      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z"/>
+      <path fill="#FBBC05" d="M5.84 14.1A6.6 6.6 0 0 1 5.5 12c0-.73.13-1.44.34-2.1V7.06H2.18A11 11 0 0 0 1 12c0 1.78.43 3.45 1.18 4.94l3.66-2.84z"/>
+      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15A10.96 10.96 0 0 0 12 1 11 11 0 0 0 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+    </svg>
+    <div class="gb-texto">
+      <p class="gb-titulo">Encontranos en Google</p>
+      <p class="gb-sub">
+        <span class="gb-estrellas" aria-hidden="true">★★★★★</span>
+        Mirá reseñas, fotos, horarios y cómo llegar. ¿Ya compraste en JBD? Contanos cómo te fue.
+      </p>
+    </div>
+    <a class="gb-cta" href={negocio.google} target="_blank" rel="noopener">Dejanos tu reseña</a>
+  </div>
+</section>
+
+<style>
+  .google-banner {
+    background: #FFFFFF;
+    color: #1F1F1F;
+    padding: var(--esp-10) var(--esp-4);
+    border-top: 4px solid;
+    border-image: linear-gradient(90deg, #4285F4 0 25%, #EA4335 25% 50%, #FBBC05 50% 75%, #34A853 75% 100%) 1;
+  }
+  .gb-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: var(--esp-6);
+  }
+  .gb-logo { flex-shrink: 0; }
+  .gb-texto { flex: 1; min-width: 0; }
+  .gb-titulo {
+    margin: 0 0 var(--esp-2);
+    font-family: var(--fuente-display);
+    font-size: var(--texto-h2, 28px);
+    font-weight: var(--peso-black);
+    line-height: 1.1;
+    color: #1F1F1F;
+  }
+  .gb-sub { margin: 0; font-size: var(--texto-cuerpo); color: #444746; }
+  .gb-estrellas { color: #FBBC05; letter-spacing: 2px; margin-right: 6px; }
+  .gb-cta {
+    flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    min-height: 52px; padding: 14px 28px;
+    border-radius: var(--radio-md);
+    background: var(--color-marca); color: var(--color-texto-sobre-marca);
+    font-family: var(--fuente-texto); font-size: var(--texto-cuerpo-lg); font-weight: var(--peso-bold);
+    text-decoration: none; transition: filter .12s;
+  }
+  .gb-cta:hover { filter: brightness(1.1); text-decoration: none; }
+  @media (max-width: 760px) {
+    .gb-inner { flex-direction: column; text-align: center; gap: var(--esp-4); }
+    .gb-cta { width: 100%; }
+  }
+</style>
