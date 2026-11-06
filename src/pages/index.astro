@@ -3,7 +3,6 @@ import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Orientador from '../components/Orientador.astro';
-import GoogleBanner from '../components/GoogleBanner.astro';
 import ProductoLista from '../components/ProductoLista.astro';
 import IconoWASprite from '../components/IconoWASprite.astro';
 import StockBadge from '../components/StockBadge.astro';
@@ -84,8 +83,6 @@ const totalProductos = stock.productos.length;
 
     <Orientador />
 
-    <div class="home-banner-google"><GoogleBanner /></div>
-
     <section class="destacados">
       <div class="dest-head">
         <h2>Algunos repuestos del catálogo</h2>
@@ -137,7 +134,8 @@ const totalProductos = stock.productos.length;
     </section>
 
   </main>
-  <Footer bannerGoogle={false} />
+  <!-- El banner de Google va arriba del pie, justo debajo de "Explorá por categoría" -->
+  <Footer />
 </Base>
 <style>
   .hero { position: relative; min-height: 78vh; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid var(--borde-card); }
@@ -180,7 +178,6 @@ const totalProductos = stock.productos.length;
     .buscador-asistente-cta { width: 100%; text-align: center; }
   }
 
-  .home-banner-google { margin-top: var(--esp-12); }
   .destacados, .cats { max-width: 1180px; margin: 0 auto; padding: var(--esp-12) var(--esp-4); }
   .dest-head, .cats-head { margin-bottom: var(--esp-6); }
   .dest-head h2, .cats-head h2 { font-size: var(--texto-display); margin-bottom: var(--esp-2); }
