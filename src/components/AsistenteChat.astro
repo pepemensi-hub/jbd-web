@@ -167,6 +167,25 @@ const config = { modelos, categorias, sintomas, urlCatalogo, whatsapp: negocio.w
       if (!estado.marca) return 'tu auto';
       return estado.marca + (estado.modelo ? ' ' + estado.modelo : '');
     }
+    // Datos que viajan al carrito y a WhatsApp (sin precios)
+    function contexto() {
+      return {
+        auto: estado.marca ? textoAuto() : '',
+        problema: estado.sintoma ? estado.etiqueta : '',
+        busca: estado.sintoma ? '' : (estado.etiqueta || ''),
+        perfil: estado.perfil || '',
+      };
+    }
+    function mensajeConsulta(lineaRepuesto) {
+      const c = contexto();
+      const lineas = ['Hola JBD, quiero hacer una consulta.'];
+      if (c.auto) lineas.push('Auto: ' + c.auto);
+      if (c.problema) lineas.push('Problema: ' + c.problema);
+      if (c.busca) lineas.push('Busco: ' + c.busca);
+      if (lineaRepuesto) lineas.push('Repuesto: ' + lineaRepuesto);
+      if (c.perfil !== 'mecanico') lineas.push('', 'Necesito asesoría.');
+      return lineas.join('\n');
+    }
 
     // ---------- Pasos ----------
     function inicio() {
@@ -262,10 +281,7 @@ const config = { modelos, categorias, sintomas, urlCatalogo, whatsapp: negocio.w
       lista.sort((a, b) => (a.est === 'disponible' ? 0 : 1) - (b.est === 'disponible' ? 0 : 1)
         || (a.marca === 'Universal' ? 1 : 0) - (b.marca === 'Universal' ? 1 : 0));
 
-      const msgWA = estado.sintoma
-        ? 'Hola JBD, tengo un ' + textoAuto() + ' que ' + estado.etiqueta.charAt(0).toLowerCase() + estado.etiqueta.slice(1) + '. ¿Qué repuestos me recomiendan?'
-        : 'Hola JBD, busco ' + (estado.etiqueta ? estado.etiqueta.toLowerCase() : 'un repuesto') + ' para ' + textoAuto() + '. ¿Me pasan opciones y precio?';
-      const linkWA = 'https://wa.me/' + config.whatsapp + '?text=' + encodeURIComponent(msgWA);
+      const linkWA = 'https://wa.me/' + config.whatsapp + '?text=' + encodeURIComponent(mensajeConsulta(''));
 
       if (!lista.length) {
         bot('No encontré productos con foto para eso en el catálogo online, pero seguro lo conseguimos. Escribinos y lo vemos.');
@@ -298,14 +314,15 @@ const config = { modelos, categorias, sintomas, urlCatalogo, whatsapp: negocio.w
 
     function tarjeta(p) {
       const compat = p.marca + (p.fab ? ' · ' + p.fab : '');
-      const wa = 'https://wa.me/' + config.whatsapp + '?text=' + encodeURIComponent('Hola JBD, quiero consultar por: ' + p.nombre + ' (cód. ' + p.sku + ')');
+      const wa = 'https://wa.me/' + config.whatsapp + '?text=' + encodeURIComponent(mensajeConsulta(p.nombre + ' (cód. ' + p.sku + ')'));
+      const c = contexto();
       const estadoTxt = p.est === 'disponible' ? 'En stock' : 'A pedido';
       return '<div class="asis-prod">' +
         '<div class="asis-prod-img">' + (p.img ? '<img src="' + IMG + esc(p.img) + '=w200" alt="" loading="lazy" referrerpolicy="no-referrer">' : '') + '</div>' +
         '<div class="asis-prod-info"><span class="asis-prod-estado asis-' + esc(p.est) + '">' + estadoTxt + '</span>' +
           '<span class="asis-prod-nombre">' + esc(p.nombre) + '</span>' +
           '<span class="asis-prod-acciones">' +
-            '<button type="button" class="asis-prod-agregar" data-agregar data-sku="' + esc(p.sku) + '" data-nombre="' + esc(p.nombre) + '" data-compat="' + esc(compat) + '" data-precio="">Agregar</button>' +
+            '<button type="button" class="asis-prod-agregar" data-agregar data-sku="' + esc(p.sku) + '" data-nombre="' + esc(p.nombre) + '" data-compat="' + esc(compat) + '" data-precio="" data-auto="' + esc(c.auto) + '" data-problema="' + esc(c.problema) + '" data-perfil="' + esc(c.perfil) + '">Agregar</button>' +
             '<a class="asis-prod-wa" href="' + esc(wa) + '" target="_blank" rel="noopener noreferrer" data-wa="asistente">Consultar</a>' +
           '</span></div></div>';
     }
