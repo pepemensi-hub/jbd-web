@@ -123,6 +123,8 @@ const config = { modelos, categorias, sintomas, urlCatalogo, whatsapp: negocio.w
         if (b.href) {
           el.href = b.href;
           if (b.externo) { el.target = '_blank'; el.rel = 'noopener noreferrer'; }
+          // Link que se calcula al tocar (p. ej. incluye lo que haya en el carrito)
+          if (b.dinamico) el.addEventListener('click', () => { el.href = b.dinamico(b.href); });
         } else {
           el.type = 'button';
           el.addEventListener('click', () => { usuario(el.textContent.trim()); b.accion(); });
@@ -175,6 +177,14 @@ const config = { modelos, categorias, sintomas, urlCatalogo, whatsapp: negocio.w
         busca: estado.sintoma ? '' : (estado.etiqueta || ''),
         perfil: estado.perfil || '',
       };
+    }
+    // Si hay repuestos en el carrito, el botón de WhatsApp manda el pedido completo
+    // (mismo mensaje que arma Carrito.astro); si no, la consulta con auto y problema.
+    function linkPedido(linkConsulta) {
+      const carrito = document.getElementById('carrito-wa');
+      let items = [];
+      try { items = JSON.parse(localStorage.getItem('jbd_carrito_v1')) || []; } catch (e) {}
+      return items.length && carrito && carrito.href.indexOf('wa.me') !== -1 ? carrito.href : linkConsulta;
     }
     function mensajeConsulta(lineaRepuesto) {
       const c = contexto();
@@ -286,7 +296,7 @@ const config = { modelos, categorias, sintomas, urlCatalogo, whatsapp: negocio.w
       if (!lista.length) {
         bot('No encontré productos con foto para eso en el catálogo online, pero seguro lo conseguimos. Escribinos y lo vemos.');
         botones([
-          { label: 'Preguntar por WhatsApp', tipo: 'whatsapp', href: linkWA, externo: true },
+          { label: 'Enviar consulta por WhatsApp para confirmar disponibilidad y armar el pedido', tipo: 'whatsapp', href: linkWA, externo: true, dinamico: linkPedido },
           { label: 'Buscar otra cosa', accion: pasoNecesidad },
           { label: 'Empezar de nuevo', tipo: 'link', accion: inicio },
         ]);
@@ -307,7 +317,7 @@ const config = { modelos, categorias, sintomas, urlCatalogo, whatsapp: negocio.w
       botones([
         { label: 'Ver más en el catálogo', tipo: 'primario', href: config.urlCatalogo + '?' + params.toString() },
         { label: 'Agregar otra cosa para ' + esc(textoAuto()), accion: pasoNecesidad },
-        { label: 'No lo encuentro: preguntar por WhatsApp', tipo: 'whatsapp', href: linkWA, externo: true },
+        { label: 'Enviar consulta por WhatsApp para confirmar disponibilidad y armar el pedido', tipo: 'whatsapp', href: linkWA, externo: true, dinamico: linkPedido },
         { label: 'Empezar de nuevo', tipo: 'link', accion: inicio },
       ]);
     }
