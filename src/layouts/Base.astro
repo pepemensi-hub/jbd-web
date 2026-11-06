@@ -11,6 +11,8 @@ interface Props {
 }
 
 const { titulo, descripcion } = Astro.props;
+// En el sitio de prueba (QA) se compila con PUBLIC_ENTORNO=qa: no se indexa en Google.
+const esQA = import.meta.env.PUBLIC_ENTORNO === 'qa';
 ---
 <!doctype html>
 <html lang="es-AR">
@@ -20,6 +22,7 @@ const { titulo, descripcion } = Astro.props;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{titulo}</title>
     <meta name="description" content={descripcion} />
+    {esQA && <meta name="robots" content="noindex, nofollow" />}
     <meta property="og:type" content="website" />
     <meta property="og:title" content={titulo} />
     <meta property="og:description" content={descripcion} />

@@ -1,0 +1,33 @@
+name: Compilar sitio de prueba (QA)
+# Cada push a la rama `prueba` compila el sitio en modo QA (noindex) y deja dist/
+# en la rama `hostinger-qa`. Hostinger publica esa rama en el subdominio de prueba
+# solo cuando se toca Redeploy (manual).
+on:
+  push:
+    branches: [prueba]
+  workflow_dispatch:
+concurrency:
+  group: qa
+  cancel-in-progress: true
+jobs:
+  hostinger-qa:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+        env:
+          PUBLIC_ENTORNO: qa
+      - uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          publish_branch: hostinger-qa
+          force_orphan: true
+          commit_message: "Sitio de prueba compilado para Hostinger (QA)"
