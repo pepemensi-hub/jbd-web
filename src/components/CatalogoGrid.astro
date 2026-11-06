@@ -32,6 +32,10 @@ const catConProductos = categorias.filter(c => productos.some(p => p.categoria =
 <div class="cat-buscador">
   <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
   <input type="search" id="q" placeholder="Buscar por nombre, marca, modelo o código…" autocomplete="off" />
+  <button type="button" class="cat-asistente" data-abrir-asistente>
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <span>Asistente</span>
+  </button>
 </div>
 
 <div class="cat-layout">
@@ -186,11 +190,24 @@ const catConProductos = categorias.filter(c => productos.some(p => p.categoria =
 
     verMas.addEventListener('click', dibujarTanda);
 
-    const qInit = new URLSearchParams(location.search).get('q');
+    // Filtros que llegan por URL (buscador de la home y asistente): ?q=, ?marca=, ?cat=
+    const params = new URLSearchParams(location.search);
+    const qInit = params.get('q');
     if (qInit) {
       input.value = qInit;
       estado.q = qInit.trim();
     }
+    ['marca', 'cat'].forEach(function (clave) {
+      const val = params.get(clave);
+      if (!val) return;
+      const tipo = clave === 'cat' ? 'categoria' : 'marca';
+      const grupo = document.querySelector('.chips[data-filtro="' + tipo + '"]');
+      const chip = grupo && Array.from(grupo.querySelectorAll('.chip')).find(function (c) { return c.dataset.val === val; });
+      if (!chip) return;
+      grupo.querySelectorAll('.chip').forEach(function (c) { c.classList.remove('activo'); });
+      chip.classList.add('activo');
+      estado[tipo] = val;
+    });
 
     fetch(grid.dataset.url)
       .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
@@ -210,6 +227,8 @@ const catConProductos = categorias.filter(c => productos.some(p => p.categoria =
 <style>
   .cat-buscador { display: flex; align-items: center; gap: 10px; background: var(--superficie-input); border: 1px solid var(--color-borde-fuerte); border-radius: var(--radio-md); padding: 0 14px; min-height: 52px; margin-bottom: var(--esp-6); color: var(--color-texto-terciario); }
   .cat-buscador input { flex: 1; border: 0; outline: 0; background: transparent; font-family: var(--fuente-texto); font-size: var(--texto-cuerpo-lg); color: var(--color-texto-primario); min-width: 0; }
+  .cat-asistente { flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; min-height: 38px; padding: 0 14px; border: 0; border-radius: var(--radio-md); background: var(--color-marca); color: var(--color-texto-sobre-marca); font-family: var(--fuente-texto); font-size: var(--texto-sm); font-weight: var(--peso-semibold); cursor: pointer; }
+  .cat-asistente:hover { background: var(--color-marca-hover); }
   .cat-layout { display: grid; grid-template-columns: 240px 1fr; gap: var(--esp-8); align-items: start; }
   .cat-filtros { position: sticky; top: var(--esp-4); display: flex; flex-direction: column; gap: var(--esp-6); }
   .filtro-grupo h4 { font-family: var(--fuente-texto); font-size: var(--texto-xs); font-weight: var(--peso-bold); text-transform: uppercase; letter-spacing: var(--tracking-label); color: var(--color-texto-terciario); margin: 0 0 var(--esp-3); }

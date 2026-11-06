@@ -55,6 +55,12 @@ const totalProductos = stock.productos.length;
           </div>
           <button type="submit" class="buscador-btn">Buscar</button>
         </form>
+        <button type="button" class="buscador-asistente" data-abrir-asistente>
+          <span class="buscador-asistente-icono" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </span>
+          <span><strong>¿No sabés cómo se llama el repuesto?</strong> Respondé unas preguntas y te lo encontramos →</span>
+        </button>
       </div>
     </section>
 
@@ -119,6 +125,17 @@ const totalProductos = stock.productos.length;
   .buscador-input-wrap input { flex: 1; border: 0; outline: 0; background: transparent; font-family: var(--fuente-texto); font-size: var(--texto-cuerpo-lg); color: var(--color-texto-primario); min-width: 0; }
   .buscador-btn { flex-shrink: 0; min-height: 64px; padding: 0 var(--esp-6); font-family: var(--fuente-texto); font-size: var(--texto-cuerpo-lg); font-weight: var(--peso-bold); color: var(--color-texto-primario); background: var(--color-marca); border: none; border-radius: var(--radio-md); cursor: pointer; transition: background .12s; }
   .buscador-btn:hover { background: var(--color-marca-hover); }
+  .buscador-asistente {
+    display: inline-flex; align-items: center; gap: var(--esp-3);
+    margin-top: var(--esp-4); padding: 12px 18px; max-width: 720px;
+    border: 1px dashed var(--color-borde-fuerte); border-radius: var(--radio-md);
+    background: transparent; color: var(--color-texto-secundario);
+    font-family: var(--fuente-texto); font-size: var(--texto-cuerpo); text-align: left; line-height: 1.4;
+    cursor: pointer; transition: border-color .12s, color .12s;
+  }
+  .buscador-asistente strong { color: var(--color-texto-primario); }
+  .buscador-asistente:hover { border-color: var(--color-marca); color: var(--color-texto-primario); }
+  .buscador-asistente-icono { flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--color-marca); color: var(--color-texto-sobre-marca); }
   @media (max-width: 640px) {
     .buscador-frase { font-size: 22px; }
     .buscador-form { flex-direction: column; }

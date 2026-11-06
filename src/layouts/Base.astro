@@ -4,6 +4,7 @@ import SchemaLocalBusiness from '../components/SchemaLocalBusiness.astro';
 import '../styles/tokens.css';
 import Carrito from '../components/Carrito.astro';
 import WhatsAppFab from '../components/WhatsAppFab.astro';
+import AsistenteChat from '../components/AsistenteChat.astro';
 
 interface Props {
   titulo: string;
@@ -33,5 +34,6 @@ const esQA = import.meta.env.PUBLIC_ENTORNO === 'qa';
     <slot />
     <Carrito />
     <WhatsAppFab />
+    <AsistenteChat />
   </body>
 </html>

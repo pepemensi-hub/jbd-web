@@ -1,0 +1,431 @@
+---
+// Asistente de búsqueda guiado (chat con botones, sin IA ni servidor).
+// Se abre desde cualquier elemento con [data-abrir-asistente]. Usa /catalogo.json
+// (el mismo del catálogo) y los botones [data-agregar] que escucha Carrito.astro.
+import negocio from '../data/negocio.json';
+
+const urlDatos = import.meta.env.BASE_URL.replace(/\/?$/, '/') + 'catalogo.json';
+const urlCatalogo = import.meta.env.BASE_URL.replace(/\/?$/, '/') + 'catalogo/';
+
+// Modelos por marca: etiqueta + palabras que se buscan en el nombre del producto.
+// Solo se muestran los que tienen productos cargados, ordenados por cantidad.
+const modelos = {
+  Chevrolet: [['Corsa'], ['S10'], ['Astra'], ['Cruze'], ['Vectra'], ['Aveo'], ['Meriva'], ['Onix'], ['Blazer'], ['Prisma'], ['Agile'], ['Tracker'], ['Spin'], ['Cobalt'], ['Celta'], ['Classic'], ['Zafira'], ['Montana']],
+  Citroen: [['C4'], ['C3'], ['Berlingo'], ['Jumper'], ['DS3'], ['Xsara'], ['Picasso'], ['C5'], ['Saxo'], ['Cactus'], ['C-Elysée', 'ELYSEE'], ['Aircross']],
+  Fiat: [['Palio'], ['Siena'], ['Strada'], ['Uno'], ['Idea'], ['Punto'], ['Cronos'], ['Argo'], ['Duna'], ['Fiorino'], ['Mobi'], ['Weekend'], ['Toro'], ['Ducato']],
+  Ford: [['Fiesta'], ['Ranger'], ['Focus'], ['Ka'], ['Escort'], ['EcoSport', 'ECOSPORT'], ['F-100', 'F-100', 'F100'], ['Falcon'], ['Mondeo'], ['Transit'], ['Sierra'], ['Kuga'], ['Courier']],
+  Jeep: [['Renegade'], ['Compass'], ['Cherokee'], ['Wrangler']],
+  Peugeot: [['206'], ['307'], ['207'], ['405'], ['306'], ['Partner'], ['308'], ['Boxer'], ['208'], ['406'], ['3008'], ['408'], ['106'], ['505'], ['504'], ['2008'], ['Expert'], ['301']],
+  Renault: [['Clio'], ['Mégane', 'MEGANE'], ['Kangoo'], ['Master'], ['Laguna'], ['R19', 'R19', 'R 19'], ['Logan'], ['Duster'], ['Sandero'], ['Trafic'], ['R18', 'R18', 'R 18'], ['Fluence'], ['Kwid'], ['Scénic', 'SCENIC'], ['R9', 'R9', 'R 9'], ['R21', 'R21', 'R 21'], ['Captur'], ['R12', 'R12', 'R 12'], ['Oroch'], ['Symbol']],
+  Toyota: [['Hilux'], ['Corolla'], ['Etios'], ['SW4'], ['Yaris'], ['RAV4'], ['Hiace']],
+  Volkswagen: [['Golf'], ['Gol'], ['Polo'], ['Vento'], ['Amarok'], ['Fox'], ['Passat'], ['Bora'], ['Suran'], ['Senda'], ['Up'], ['Trend'], ['Gacel'], ['Tiguan'], ['Saveiro'], ['Nivus'], ['Virtus'], ['Voyage'], ['T-Cross'], ['Taos']],
+};
+
+const categorias = {
+  filtros: 'Filtros', correas: 'Correas y distribución', frenos: 'Frenos', encendido: 'Encendido',
+  suspension: 'Suspensión', refrigeracion: 'Refrigeración', electricidad: 'Electricidad', inyeccion: 'Inyección',
+  transmision: 'Embrague y transmisión', direccion: 'Dirección', escape: 'Escape', 'aire-acondicionado': 'Aire acondicionado',
+  'tren-delantero': 'Tren delantero', motor: 'Motor', carroceria: 'Carrocería y accesorios', otros: 'Otros',
+};
+
+// Síntomas (camino del particular) → categorías donde buscar
+const sintomas = [
+  { label: 'Hace ruido al frenar o frena mal', cats: ['frenos'] },
+  { label: 'Calienta o pierde agua', cats: ['refrigeracion'] },
+  { label: 'No arranca o falla la batería', cats: ['electricidad', 'encendido'] },
+  { label: 'Ruidos o golpes en la suspensión', cats: ['tren-delantero', 'suspension'] },
+  { label: 'Le toca el service (aceite y filtros)', cats: ['filtros'] },
+  { label: 'Cambio de correa / distribución', cats: ['correas'] },
+  { label: 'Patina o cuesta pasar los cambios', cats: ['transmision'] },
+  { label: 'El aire acondicionado no enfría', cats: ['aire-acondicionado'] },
+];
+
+const config = { modelos, categorias, sintomas, urlCatalogo, whatsapp: negocio.whatsapp };
+---
+<div class="asis" id="asistente" hidden data-url={urlDatos}>
+  <div class="asis-fondo" data-cerrar-asistente></div>
+  <div class="asis-panel" role="dialog" aria-modal="true" aria-labelledby="asis-titulo">
+    <header class="asis-head">
+      <span class="asis-avatar" aria-hidden="true">J<span>.</span></span>
+      <div class="asis-head-txt">
+        <strong id="asis-titulo">Asistente JBD</strong>
+        <span>Te ayudo a encontrar el repuesto</span>
+      </div>
+      <button type="button" class="asis-reiniciar" data-asis-reiniciar title="Empezar de nuevo" aria-label="Empezar de nuevo">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+      </button>
+      <button type="button" class="asis-cerrar" data-cerrar-asistente aria-label="Cerrar asistente">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </header>
+    <div class="asis-mensajes" id="asis-mensajes" aria-live="polite"></div>
+    <div class="asis-opciones" id="asis-opciones"></div>
+  </div>
+</div>
+
+<script is:inline define:vars={{ config }}>
+  (function () {
+    const raiz = document.getElementById('asistente');
+    if (!raiz) return;
+    const mensajes = document.getElementById('asis-mensajes');
+    const opciones = document.getElementById('asis-opciones');
+    const IMG = 'https://lh3.googleusercontent.com/d/';
+    const POR_RESULTADO = 6;
+
+    let productos = null;   // [{ sku, nombre, marca, fab, cat, est, img, N }]
+    let cargando = null;
+    let estado = {};        // { perfil, marca, modelo, claves, cats, etiqueta, q }
+    let ultimoFoco = null;
+
+    const MAPA_ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+    const esc = s => String(s).replace(/[&<>"']/g, c => MAPA_ESC[c]);
+    const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase();
+    const reClave = k => new RegExp('(^|[^A-Z0-9])' + norm(k).replace(/[-]/g, '\\-') + '([^A-Z0-9]|$)');
+
+    function cargar() {
+      if (productos) return Promise.resolve(productos);
+      if (!cargando) {
+        cargando = fetch(raiz.dataset.url)
+          .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+          .then(d => {
+            productos = d.productos.map(a => ({ sku: a[0], nombre: a[1], marca: a[2], fab: a[3], cat: a[4], est: a[5], img: a[6], N: norm(a[1]) }));
+            return productos;
+          });
+      }
+      return cargando;
+    }
+
+    // ---------- Mensajes ----------
+    function bot(html) {
+      const el = document.createElement('div');
+      el.className = 'asis-msg asis-bot';
+      el.innerHTML = html;
+      mensajes.appendChild(el);
+      bajar();
+      return el;
+    }
+    function usuario(texto) {
+      const el = document.createElement('div');
+      el.className = 'asis-msg asis-usuario';
+      el.textContent = texto;
+      mensajes.appendChild(el);
+    }
+    function bajar() { requestAnimationFrame(() => { mensajes.scrollTop = mensajes.scrollHeight; }); }
+
+    // botones: [{ label, accion, tipo? ('primario'|'link'), href? }]
+    function botones(lista, columnas) {
+      opciones.innerHTML = '';
+      opciones.className = 'asis-opciones' + (columnas ? ' asis-grilla' : '');
+      lista.forEach(b => {
+        const el = document.createElement(b.href ? 'a' : 'button');
+        el.className = 'asis-op' + (b.tipo ? ' asis-op-' + b.tipo : '');
+        el.innerHTML = b.label;
+        if (b.href) {
+          el.href = b.href;
+          if (b.externo) { el.target = '_blank'; el.rel = 'noopener noreferrer'; }
+        } else {
+          el.type = 'button';
+          el.addEventListener('click', () => { usuario(el.textContent.trim()); b.accion(); });
+        }
+        opciones.appendChild(el);
+      });
+      bajar();
+    }
+
+    function entradaTexto(placeholder, alEnviar) {
+      opciones.innerHTML = '';
+      opciones.className = 'asis-opciones';
+      const form = document.createElement('form');
+      form.className = 'asis-form';
+      form.innerHTML = '<input type="search" class="asis-input" autocomplete="off" placeholder="' + esc(placeholder) + '"><button type="submit" class="asis-op asis-op-primario">Buscar</button>';
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        const v = form.querySelector('input').value.trim();
+        if (!v) return;
+        usuario(v);
+        alEnviar(v);
+      });
+      opciones.appendChild(form);
+      const volver = document.createElement('button');
+      volver.type = 'button';
+      volver.className = 'asis-op asis-op-link';
+      volver.textContent = '← Volver';
+      volver.addEventListener('click', () => { usuario('Volver'); pasoNecesidad(); });
+      opciones.appendChild(volver);
+      form.querySelector('input').focus();
+    }
+
+    // ---------- Filtros ----------
+    function delAuto() {
+      return productos.filter(p => {
+        if (estado.marca && p.marca !== estado.marca && p.marca !== 'Universal') return false;
+        if (estado.claves && !estado.claves.some(re => re.test(p.N))) return false;
+        return true;
+      });
+    }
+    function textoAuto() {
+      if (!estado.marca) return 'tu auto';
+      return estado.marca + (estado.modelo ? ' ' + estado.modelo : '');
+    }
+
+    // ---------- Pasos ----------
+    function inicio() {
+      estado = {};
+      mensajes.innerHTML = '';
+      bot('¡Hola! Soy el asistente de <strong>JBD Repuestos</strong>. Con unas preguntas te llevo al repuesto que buscás.');
+      bot('Para empezar, ¿sos mecánico o es para tu auto?');
+      botones([
+        { label: 'Soy mecánico / taller', accion: () => { estado.perfil = 'mecanico'; pasoMarca(); } },
+        { label: 'Es para mi auto', accion: () => { estado.perfil = 'particular'; pasoMarca(); } },
+      ]);
+    }
+
+    function pasoMarca() {
+      bot(estado.perfil === 'mecanico' ? 'Genial. ¿De qué marca es el vehículo?' : 'Perfecto. ¿De qué marca es tu auto?');
+      const marcas = Object.keys(config.modelos);
+      botones(marcas.map(m => ({ label: m, accion: () => { estado.marca = m; pasoModelo(); } }))
+        .concat([{ label: 'Otra / no importa', accion: () => { estado.marca = null; pasoNecesidad(); } }]), true);
+    }
+
+    function pasoModelo() {
+      const pensando = bot('<span class="asis-puntos"><i></i><i></i><i></i></span>');
+      cargar().then(() => {
+        pensando.remove();
+        const deMarca = productos.filter(p => p.marca === estado.marca);
+        const lista = (config.modelos[estado.marca] || [])
+          .map(([label, ...claves]) => {
+            const res = (claves.length ? claves : [label]).map(reClave);
+            return { label, res, n: deMarca.filter(p => res.some(re => re.test(p.N))).length };
+          })
+          .filter(m => m.n >= 5)
+          .sort((a, b) => b.n - a.n)
+          .slice(0, 14);
+        bot('¿Qué modelo de ' + esc(estado.marca) + '?');
+        botones(lista.map(m => ({
+          label: esc(m.label),
+          accion: () => { estado.modelo = m.label; estado.claves = m.res; pasoNecesidad(); },
+        })).concat([{ label: 'Otro / no sé', accion: () => { estado.modelo = null; estado.claves = null; pasoNecesidad(); } }]), true);
+      }).catch(errorCarga);
+    }
+
+    function pasoNecesidad() {
+      cargar().then(() => {
+        const base = delAuto();
+        const porCat = {};
+        base.forEach(p => { porCat[p.cat] = (porCat[p.cat] || 0) + 1; });
+        const cats = Object.keys(config.categorias).filter(c => porCat[c]);
+        const lista = [];
+        if (estado.perfil === 'particular') {
+          bot('Para <strong>' + esc(textoAuto()) + '</strong>, ¿qué le está pasando o qué necesitás?');
+          config.sintomas.forEach(s => {
+            const n = s.cats.reduce((t, c) => t + (porCat[c] || 0), 0);
+            if (n) lista.push({ label: esc(s.label), accion: () => { estado.cats = s.cats; estado.etiqueta = s.label; estado.sintoma = true; estado.q = null; resultados(); } });
+          });
+          lista.push({ label: 'Elegir por tipo de repuesto', tipo: 'link', accion: () => elegirCategoria(cats, porCat) });
+          botones(lista);
+        } else {
+          bot('¿Qué buscás para <strong>' + esc(textoAuto()) + '</strong>?');
+          cats.forEach(c => lista.push({
+            label: esc(config.categorias[c]) + ' <small>' + porCat[c].toLocaleString('es-AR') + '</small>',
+            accion: () => { estado.cats = [c]; estado.etiqueta = config.categorias[c]; estado.sintoma = false; estado.q = null; resultados(); },
+          }));
+          lista.push({ label: 'Buscar por código o nombre', tipo: 'primario', accion: pedirTexto });
+          botones(lista, true);
+        }
+      }).catch(errorCarga);
+    }
+
+    function elegirCategoria(cats, porCat) {
+      bot('Elegí el tipo de repuesto:');
+      botones(cats.map(c => ({
+        label: esc(config.categorias[c]) + ' <small>' + porCat[c].toLocaleString('es-AR') + '</small>',
+        accion: () => { estado.cats = [c]; estado.etiqueta = config.categorias[c]; estado.sintoma = false; estado.q = null; resultados(); },
+      })), true);
+    }
+
+    function pedirTexto() {
+      bot('Escribí el código del repuesto o una palabra (por ejemplo: <em>bomba de agua</em>, <em>kit distribución</em>).');
+      entradaTexto('Código o nombre del repuesto', v => { estado.cats = null; estado.q = v; estado.etiqueta = v; estado.sintoma = false; resultados(); });
+    }
+
+    function resultados() {
+      const palabras = estado.q ? norm(estado.q).split(/\s+/).filter(Boolean) : [];
+      const sinSignos = s => s.replace(/[^A-Z0-9]/g, '');
+      const lista = delAuto().filter(p => {
+        if (estado.cats && !estado.cats.includes(p.cat)) return false;
+        for (const w of palabras) {
+          if (p.N.indexOf(w) === -1 && sinSignos(norm(p.sku)) !== sinSignos(w)) return false;
+        }
+        return true;
+      });
+      // Primero lo que está en stock y lo específico de la marca
+      lista.sort((a, b) => (a.est === 'disponible' ? 0 : 1) - (b.est === 'disponible' ? 0 : 1)
+        || (a.marca === 'Universal' ? 1 : 0) - (b.marca === 'Universal' ? 1 : 0));
+
+      const msgWA = estado.sintoma
+        ? 'Hola JBD, tengo un ' + textoAuto() + ' que ' + estado.etiqueta.charAt(0).toLowerCase() + estado.etiqueta.slice(1) + '. ¿Qué repuestos me recomiendan?'
+        : 'Hola JBD, busco ' + (estado.etiqueta ? estado.etiqueta.toLowerCase() : 'un repuesto') + ' para ' + textoAuto() + '. ¿Me pasan opciones y precio?';
+      const linkWA = 'https://wa.me/' + config.whatsapp + '?text=' + encodeURIComponent(msgWA);
+
+      if (!lista.length) {
+        bot('No encontré productos con foto para eso en el catálogo online, pero seguro lo conseguimos. Escribinos y lo vemos.');
+        botones([
+          { label: 'Preguntar por WhatsApp', tipo: 'whatsapp', href: linkWA, externo: true },
+          { label: 'Buscar otra cosa', accion: pasoNecesidad },
+          { label: 'Empezar de nuevo', tipo: 'link', accion: inicio },
+        ]);
+        return;
+      }
+
+      const total = lista.length.toLocaleString('es-AR');
+      const tarjetas = lista.slice(0, POR_RESULTADO).map(tarjeta).join('');
+      bot('Encontré <strong>' + total + '</strong> ' + (lista.length === 1 ? 'producto' : 'productos') + ' para ' + esc(textoAuto()) + '. Estos son algunos:<div class="asis-prods">' + tarjetas + '</div>' +
+        (estado.perfil === 'mecanico' ? '<p class="asis-tip">Agregá todo lo que necesites al carrito y mandá el pedido completo por WhatsApp.</p>' : ''));
+
+      const params = new URLSearchParams();
+      if (estado.marca) params.set('marca', estado.marca);
+      if (estado.cats && estado.cats.length === 1) params.set('cat', estado.cats[0]);
+      const qCat = [estado.modelo, estado.q].filter(Boolean).join(' ');
+      if (qCat) params.set('q', qCat);
+
+      botones([
+        { label: 'Ver más en el catálogo', tipo: 'primario', href: config.urlCatalogo + '?' + params.toString() },
+        { label: 'Agregar otra cosa para ' + esc(textoAuto()), accion: pasoNecesidad },
+        { label: 'No lo encuentro: preguntar por WhatsApp', tipo: 'whatsapp', href: linkWA, externo: true },
+        { label: 'Empezar de nuevo', tipo: 'link', accion: inicio },
+      ]);
+    }
+
+    function tarjeta(p) {
+      const compat = p.marca + (p.fab ? ' · ' + p.fab : '');
+      const wa = 'https://wa.me/' + config.whatsapp + '?text=' + encodeURIComponent('Hola JBD, quiero consultar por: ' + p.nombre + ' (cód. ' + p.sku + ')');
+      const estadoTxt = p.est === 'disponible' ? 'En stock' : 'A pedido';
+      return '<div class="asis-prod">' +
+        '<div class="asis-prod-img">' + (p.img ? '<img src="' + IMG + esc(p.img) + '=w200" alt="" loading="lazy" referrerpolicy="no-referrer">' : '') + '</div>' +
+        '<div class="asis-prod-info"><span class="asis-prod-estado asis-' + esc(p.est) + '">' + estadoTxt + '</span>' +
+          '<span class="asis-prod-nombre">' + esc(p.nombre) + '</span>' +
+          '<span class="asis-prod-acciones">' +
+            '<button type="button" class="asis-prod-agregar" data-agregar data-sku="' + esc(p.sku) + '" data-nombre="' + esc(p.nombre) + '" data-compat="' + esc(compat) + '" data-precio="">Agregar</button>' +
+            '<a class="asis-prod-wa" href="' + esc(wa) + '" target="_blank" rel="noopener noreferrer" data-wa="asistente">Consultar</a>' +
+          '</span></div></div>';
+    }
+
+    function errorCarga(err) {
+      console.error('Asistente: no se pudo cargar el catálogo', err);
+      bot('Uy, no pude cargar el catálogo. Probá de nuevo en un momento o escribinos por WhatsApp.');
+      botones([
+        { label: 'Hablar por WhatsApp', tipo: 'whatsapp', href: 'https://wa.me/' + config.whatsapp, externo: true },
+        { label: 'Reintentar', accion: () => { cargando = null; inicio(); } },
+      ]);
+    }
+
+    // ---------- Abrir / cerrar ----------
+    function abrir() {
+      ultimoFoco = document.activeElement;
+      raiz.hidden = false;
+      document.documentElement.classList.add('asis-abierto');
+      if (!mensajes.childElementCount) inicio();
+      cargar().catch(() => {});
+      const primero = opciones.querySelector('button, a, input');
+      if (primero) primero.focus();
+    }
+    function cerrar() {
+      raiz.hidden = true;
+      document.documentElement.classList.remove('asis-abierto');
+      if (ultimoFoco && ultimoFoco.focus) ultimoFoco.focus();
+    }
+
+    // Feedback en el chat al agregar (el carrito lo maneja Carrito.astro)
+    mensajes.addEventListener('click', e => {
+      const b = e.target.closest('.asis-prod-agregar');
+      if (b) { b.textContent = '✓ Agregado'; b.classList.add('asis-agregado'); }
+    });
+
+    document.addEventListener('click', e => {
+      if (e.target.closest('[data-abrir-asistente]')) { e.preventDefault(); abrir(); }
+      else if (e.target.closest('[data-cerrar-asistente]')) cerrar();
+      else if (e.target.closest('[data-asis-reiniciar]')) inicio();
+    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !raiz.hidden) cerrar(); });
+    if (location.hash === '#asistente') abrir();
+  })();
+</script>
+
+<style is:global>
+  html.asis-abierto { overflow: hidden; }
+  html.asis-abierto .wa-fab { display: none; }
+  /* Debajo del toast (91) y del panel del carrito (95/96), para que "Agregar" se vea */
+  .asis { position: fixed; inset: 0; z-index: 85; display: flex; align-items: flex-end; justify-content: center; }
+  .asis[hidden] { display: none; }
+  .asis-fondo { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.6); }
+  .asis-panel {
+    position: relative; width: 100%; max-width: 520px; height: min(720px, 92vh);
+    display: flex; flex-direction: column;
+    background: var(--color-superficie-elevada); border: 1px solid var(--color-borde-fuerte);
+    border-radius: var(--radio-lg, 16px) var(--radio-lg, 16px) 0 0; overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  }
+  @media (min-width: 640px) {
+    .asis { align-items: center; padding: var(--esp-4); }
+    .asis-panel { border-radius: var(--radio-lg, 16px); }
+  }
+  .asis-head { display: flex; align-items: center; gap: var(--esp-3); padding: var(--esp-3) var(--esp-4); border-bottom: 1px solid var(--color-borde-sutil); background: var(--color-superficie-alta); }
+  .asis-avatar { width: 40px; height: 40px; flex-shrink: 0; border-radius: 50%; background: #fff; color: #000; display: grid; place-items: center; font-family: var(--fuente-display); font-weight: var(--peso-black); font-size: 20px; }
+  .asis-avatar span { color: var(--color-marca); }
+  .asis-head-txt { flex: 1; display: flex; flex-direction: column; line-height: 1.25; }
+  .asis-head-txt strong { color: var(--color-texto-primario); font-size: var(--texto-cuerpo); }
+  .asis-head-txt span { color: var(--color-texto-secundario); font-size: var(--texto-xs); }
+  .asis-cerrar, .asis-reiniciar { width: 40px; height: 40px; display: grid; place-items: center; border: 0; background: transparent; color: var(--color-texto-secundario); border-radius: var(--radio-md); cursor: pointer; }
+  .asis-cerrar:hover, .asis-reiniciar:hover { background: var(--color-superficie-elevada); color: var(--color-texto-primario); }
+
+  .asis-mensajes { flex: 1; overflow-y: auto; padding: var(--esp-4); display: flex; flex-direction: column; gap: var(--esp-3); overscroll-behavior: contain; }
+  .asis-msg { max-width: 88%; padding: 10px 14px; border-radius: 16px; font-size: var(--texto-cuerpo); line-height: 1.45; animation: asis-entra .18s ease-out; }
+  .asis-bot { align-self: flex-start; background: var(--color-superficie-alta); color: var(--color-texto-primario); border-bottom-left-radius: 4px; }
+  .asis-usuario { align-self: flex-end; background: var(--color-marca); color: var(--color-texto-sobre-marca); border-bottom-right-radius: 4px; }
+  .asis-bot:has(.asis-prods) { max-width: 100%; }
+  @keyframes asis-entra { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .asis-msg { animation: none; } }
+
+  .asis-puntos { display: inline-flex; gap: 4px; padding: 4px 0; }
+  .asis-puntos i { width: 7px; height: 7px; border-radius: 50%; background: var(--color-texto-terciario); animation: asis-punto 1s infinite ease-in-out; }
+  .asis-puntos i:nth-child(2) { animation-delay: .15s; }
+  .asis-puntos i:nth-child(3) { animation-delay: .3s; }
+  @keyframes asis-punto { 0%, 80%, 100% { opacity: .3; } 40% { opacity: 1; } }
+
+  .asis-opciones { display: flex; flex-wrap: wrap; gap: var(--esp-2); padding: var(--esp-3) var(--esp-4) var(--esp-4); border-top: 1px solid var(--color-borde-sutil); max-height: 45%; overflow-y: auto; }
+  .asis-grilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+  .asis-op {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-align: center;
+    min-height: 44px; padding: 10px 14px; border-radius: var(--radio-md);
+    border: 1px solid var(--color-borde-fuerte); background: transparent; color: var(--color-texto-primario);
+    font-family: var(--fuente-texto); font-size: var(--texto-sm); font-weight: var(--peso-semibold);
+    cursor: pointer; text-decoration: none; transition: border-color .12s, background .12s;
+  }
+  .asis-op:hover { border-color: var(--color-marca); text-decoration: none; }
+  .asis-op small { color: var(--color-texto-terciario); font-weight: var(--peso-medio); }
+  .asis-op-primario { background: var(--color-marca); border-color: var(--color-marca); color: var(--color-texto-sobre-marca); }
+  .asis-op-primario small { color: rgba(255,255,255,.75); }
+  .asis-op-whatsapp { background: var(--color-whatsapp); border-color: var(--color-whatsapp); color: var(--color-whatsapp-texto); }
+  .asis-op-link { border-color: transparent; color: var(--color-texto-secundario); }
+  .asis-opciones:not(.asis-grilla) .asis-op { flex: 1 1 auto; }
+
+  .asis-form { display: flex; gap: var(--esp-2); width: 100%; }
+  .asis-input { flex: 1; min-width: 0; min-height: 44px; padding: 0 12px; border-radius: var(--radio-md); border: 1px solid var(--color-borde-fuerte); background: var(--superficie-input, var(--color-superficie-alta)); color: var(--color-texto-primario); font-family: var(--fuente-texto); font-size: var(--texto-cuerpo); }
+
+  .asis-prods { display: grid; grid-template-columns: 1fr 1fr; gap: var(--esp-2); margin-top: var(--esp-3); }
+  .asis-prod { display: flex; flex-direction: column; background: var(--color-superficie-elevada); border: 1px solid var(--color-borde-sutil); border-radius: var(--radio-md); overflow: hidden; }
+  .asis-prod-img { aspect-ratio: 4/3; background: #fff; }
+  .asis-prod-img img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .asis-prod-info { display: flex; flex-direction: column; gap: 6px; padding: 8px; flex: 1; }
+  .asis-prod-estado { font-size: 10px; font-weight: var(--peso-bold); text-transform: uppercase; letter-spacing: var(--tracking-label); color: var(--color-stock-disponible); }
+  .asis-prod-estado.asis-pedido { color: var(--color-stock-pedido); }
+  .asis-prod-nombre { font-size: var(--texto-xs); line-height: 1.35; color: var(--color-texto-primario); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .asis-prod-acciones { display: flex; gap: 6px; margin-top: auto; }
+  .asis-prod-agregar, .asis-prod-wa { flex: 1; min-height: 36px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; font-family: var(--fuente-texto); font-size: var(--texto-xs); font-weight: var(--peso-semibold); cursor: pointer; text-decoration: none; }
+  .asis-prod-agregar { border: 1px solid var(--color-borde-fuerte); background: transparent; color: var(--color-texto-primario); }
+  .asis-prod-agregar:hover { border-color: var(--color-marca); }
+  .asis-prod-agregar.asis-agregado { border-color: var(--color-stock-disponible); color: var(--color-stock-disponible); }
+  .asis-prod-wa { background: var(--color-whatsapp); color: var(--color-whatsapp-texto); border: 0; }
+  .asis-prod-wa:hover { text-decoration: none; }
+  .asis-tip { margin: var(--esp-3) 0 0; font-size: var(--texto-xs); color: var(--color-texto-secundario); }
+</style>
