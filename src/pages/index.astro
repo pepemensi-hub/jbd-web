@@ -4,11 +4,15 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Orientador from '../components/Orientador.astro';
 import GoogleBanner from '../components/GoogleBanner.astro';
-import ProductCard from '../components/ProductCard.astro';
+import ProductoLista from '../components/ProductoLista.astro';
+import IconoWASprite from '../components/IconoWASprite.astro';
 import stock from '../data/stock.json';
-import { marcas } from '../lib/catalogo.js';
+import { marcas, productos as productosOrdenados, muestra } from '../lib/catalogo.js';
 
-const destacados = stock.productos.slice(0, 8);
+// 10 páginas de 8 productos variados (se pasan con el paginador, sin recargar)
+const POR_PAGINA = 8;
+const destacados = muestra(productosOrdenados, POR_PAGINA * 10, 'categoria');
+const paginasDest = Array.from({ length: Math.ceil(destacados.length / POR_PAGINA) }, (_, i) => destacados.slice(i * POR_PAGINA, (i + 1) * POR_PAGINA));
 
 const categorias = [
   { id: 'filtros', label: 'Filtros' },
@@ -50,19 +54,27 @@ const totalProductos = stock.productos.length;
     <section class="buscador-home">
       <div class="buscador-inner">
         <p class="buscador-frase">Tienda online con más de {totalProductos.toLocaleString('es-AR')} productos cargados</p>
-        <form class="buscador-form" action="/catalogo/" method="get" role="search">
-          <div class="buscador-input-wrap">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-            <input type="search" name="q" placeholder="Buscar por nombre, marca, modelo o código…" aria-label="Buscar en el catálogo" autocomplete="off" />
-          </div>
-          <button type="submit" class="buscador-btn">Buscar</button>
-        </form>
-        <button type="button" class="buscador-asistente" data-abrir-asistente>
-          <span class="buscador-asistente-icono" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          </span>
-          <span><strong>¿No sabés cómo se llama el repuesto?</strong> Respondé unas preguntas y te lo encontramos →</span>
-        </button>
+        <!-- Un solo recuadro: arriba buscás vos, abajo te guía el asistente -->
+        <div class="buscador-caja">
+          <form class="buscador-form" action="/catalogo/" method="get" role="search">
+            <svg class="buscador-lupa" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="search" name="q" placeholder="Buscá por nombre, marca, modelo o código…" aria-label="Buscar en el catálogo" autocomplete="off" />
+            <button type="submit" class="buscador-enviar" aria-label="Buscar">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+            </button>
+          </form>
+          <div class="buscador-o" aria-hidden="true"><span>o</span></div>
+          <button type="button" class="buscador-asistente" data-abrir-asistente>
+            <span class="buscador-chispas" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M10 2.5c.4 3.9 1.9 5.9 6.5 6.5-4.6.6-6.1 2.6-6.5 6.5-.4-3.9-1.9-5.9-6.5-6.5 4.6-.6 6.1-2.6 6.5-6.5Z"/><path d="M18.5 13c.2 2.1 1 3.1 3.5 3.5-2.5.4-3.3 1.4-3.5 3.5-.2-2.1-1-3.1-3.5-3.5 2.5-.4 3.3-1.4 3.5-3.5Z"/><path d="M5.5 16.5c.15 1.4.7 2.05 2.25 2.25-1.55.2-2.1.85-2.25 2.25-.15-1.4-.7-2.05-2.25-2.25 1.55-.2 2.1-.85 2.25-2.25Z"/></svg>
+            </span>
+            <span class="buscador-asistente-texto">
+              <strong>¿No sabés cómo se llama el repuesto?</strong>
+              <span>El asistente te hace unas preguntas y te lo encuentra.</span>
+            </span>
+            <span class="buscador-asistente-cta">Usar asistente</span>
+          </button>
+        </div>
       </div>
     </section>
 
@@ -75,19 +87,31 @@ const totalProductos = stock.productos.length;
         <h2>Algunos repuestos del catálogo</h2>
         <p>Una muestra chica. Tenemos más de {totalProductos.toLocaleString('es-AR')} productos en stock.</p>
       </div>
-      <div class="dest-grid">
-        {destacados.map((p) => (
-          <ProductCard
-            sku={p.sku}
-            nombre={p.nombre}
-            marca={p.marca}
-            modelos={p.modelos}
-            precio={p.precio}
-            estado={p.estado}
-            imagen={p.imagen}
-          />
+      <IconoWASprite />
+      {paginasDest.map((pag, i) => (
+        <div class="dest-grid dest-pagina" data-pagina={i + 1} hidden={i > 0}>
+          {pag.map((p) => <ProductoLista p={p} />)}
+        </div>
+      ))}
+
+      <!-- Paginador estilo Google: JB + una D por página + el punto rojo del logo -->
+      <nav class="dest-paginador" aria-label="Páginas de productos" data-total={paginasDest.length}>
+        <div class="pg-col pg-extremo">
+          <span class="pg-letra" aria-hidden="true">JB</span>
+          <button type="button" class="pg-num pg-ant" data-ir="ant" disabled>‹ Anterior</button>
+        </div>
+        {paginasDest.map((_, i) => (
+          <div class="pg-col">
+            <span class={i === 0 ? 'pg-letra pg-actual' : 'pg-letra'} aria-hidden="true">D</span>
+            <button type="button" class="pg-num" data-ir={i + 1} aria-label={`Página ${i + 1}`} aria-current={i === 0 ? 'page' : undefined}>{i + 1}</button>
+          </div>
         ))}
-      </div>
+        <div class="pg-col pg-extremo">
+          <span class="pg-letra pg-punto" aria-hidden="true">.</span>
+          <button type="button" class="pg-num pg-sig" data-ir="sig">Siguiente ›</button>
+        </div>
+      </nav>
+      <p class="dest-todo"><a href="/catalogo/">Ver los {totalProductos.toLocaleString('es-AR')} productos en el catálogo →</a></p>
     </section>
 
     <section class="cats">
@@ -130,28 +154,30 @@ const totalProductos = stock.productos.length;
   .buscador-home { max-width: 1180px; margin: 0 auto; padding: var(--esp-12) var(--esp-4) 0; }
   .buscador-inner { text-align: center; }
   .buscador-frase { font-family: var(--fuente-display); font-size: var(--texto-h2, 28px); font-weight: var(--peso-bold); color: var(--color-texto-primario); margin: 0 auto var(--esp-5); max-width: 720px; line-height: 1.15; }
-  .buscador-form { display: flex; gap: var(--esp-3); max-width: 720px; margin: 0 auto; }
-  .buscador-input-wrap { flex: 1; display: flex; align-items: center; gap: 10px; background: var(--superficie-input, #1a1a1e); border: 1px solid var(--color-borde-fuerte); border-radius: var(--radio-md); padding: 0 18px; min-height: 64px; color: var(--color-texto-terciario); transition: border-color .12s; }
-  .buscador-input-wrap:focus-within { border-color: var(--color-marca); }
-  .buscador-input-wrap input { flex: 1; border: 0; outline: 0; background: transparent; font-family: var(--fuente-texto); font-size: var(--texto-cuerpo-lg); color: var(--color-texto-primario); min-width: 0; }
-  .buscador-btn { flex-shrink: 0; min-height: 64px; padding: 0 var(--esp-6); font-family: var(--fuente-texto); font-size: var(--texto-cuerpo-lg); font-weight: var(--peso-bold); color: var(--color-texto-primario); background: var(--color-marca); border: none; border-radius: var(--radio-md); cursor: pointer; transition: background .12s; }
-  .buscador-btn:hover { background: var(--color-marca-hover); }
-  .buscador-asistente {
-    display: inline-flex; align-items: center; gap: var(--esp-3);
-    margin-top: var(--esp-4); padding: 12px 18px; max-width: 720px;
-    border: 1px dashed var(--color-borde-fuerte); border-radius: var(--radio-md);
-    background: transparent; color: var(--color-texto-secundario);
-    font-family: var(--fuente-texto); font-size: var(--texto-cuerpo); text-align: left; line-height: 1.4;
-    cursor: pointer; transition: border-color .12s, color .12s;
-  }
-  .buscador-asistente strong { color: var(--color-texto-primario); }
-  .buscador-asistente:hover { border-color: var(--color-marca); color: var(--color-texto-primario); }
-  .buscador-asistente-icono { flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--color-marca); color: var(--color-texto-sobre-marca); }
+  /* Recuadro único: búsqueda propia (lupa + enviar verde) y asistente (estrellitas) */
+  .buscador-caja { --verde: var(--color-stock-disponible); --verde-tinte: var(--color-stock-disponible-tinte); max-width: 720px; margin: 0 auto; background: var(--superficie-input, #1a1a1e); border: 1px solid var(--color-borde-fuerte); border-radius: var(--radio-lg, 16px); box-shadow: 0 10px 30px rgba(0,0,0,.35); overflow: hidden; text-align: left; transition: border-color .15s, box-shadow .15s; }
+  .buscador-caja:focus-within { border-color: var(--verde); box-shadow: 0 0 0 3px var(--verde-tinte), 0 10px 30px rgba(0,0,0,.35); }
+  .buscador-form { display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 20px; min-height: 72px; }
+  .buscador-lupa { flex-shrink: 0; color: var(--verde); }
+  .buscador-form input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font-family: var(--fuente-texto); font-size: var(--texto-cuerpo-lg); color: var(--color-texto-primario); }
+  .buscador-form input::placeholder { color: var(--color-texto-terciario); }
+  .buscador-enviar { flex-shrink: 0; width: 52px; height: 52px; display: grid; place-items: center; border: 0; border-radius: 50%; background: var(--verde); color: #0A0A0A; cursor: pointer; transition: transform .12s, filter .12s; }
+  .buscador-enviar:hover { filter: brightness(1.1); transform: translateX(2px); }
+  .buscador-o { display: flex; align-items: center; gap: 12px; padding: 0 20px; color: var(--color-texto-terciario); font-size: var(--texto-xs); text-transform: uppercase; letter-spacing: var(--tracking-label); }
+  .buscador-o::before, .buscador-o::after { content: ""; flex: 1; height: 1px; background: var(--color-borde-fuerte); }
+  .buscador-asistente { display: flex; align-items: center; gap: 14px; width: 100%; padding: 16px 20px; border: 0; background: transparent; color: var(--color-texto-secundario); font-family: var(--fuente-texto); font-size: var(--texto-cuerpo); text-align: left; line-height: 1.35; cursor: pointer; transition: background .12s; }
+  .buscador-asistente:hover { background: var(--verde-tinte); }
+  .buscador-chispas { flex-shrink: 0; width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; background: var(--verde-tinte); color: var(--verde); }
+  .buscador-asistente-texto { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+  .buscador-asistente-texto strong { color: var(--color-texto-primario); }
+  .buscador-asistente-cta { flex-shrink: 0; padding: 10px 16px; border: 1px solid var(--verde); border-radius: 999px; color: var(--verde); font-weight: var(--peso-bold); white-space: nowrap; transition: background .12s, color .12s; }
+  .buscador-asistente:hover .buscador-asistente-cta { background: var(--verde); color: #0A0A0A; }
   @media (max-width: 640px) {
     .buscador-frase { font-size: 22px; }
-    .buscador-form { flex-direction: column; }
-    .buscador-input-wrap { min-height: 56px; }
-    .buscador-btn { min-height: 56px; width: 100%; }
+    .buscador-form { padding-left: 16px; min-height: 64px; }
+    .buscador-enviar { width: 46px; height: 46px; }
+    .buscador-asistente { flex-wrap: wrap; padding: 14px 16px; }
+    .buscador-asistente-cta { width: 100%; text-align: center; }
   }
 
   .home-banner-google { margin-top: var(--esp-12); }
@@ -160,6 +186,28 @@ const totalProductos = stock.productos.length;
   .dest-head h2, .cats-head h2 { font-size: var(--texto-display); margin-bottom: var(--esp-2); }
   .dest-head p, .cats-head p { color: var(--color-texto-secundario); margin: 0; }
   .dest-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--esp-4); }
+  .dest-grid[hidden] { display: none; }
+
+  .dest-paginador { display: flex; justify-content: center; align-items: flex-end; gap: 2px; margin-top: var(--esp-10, 40px); }
+  .pg-col { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .pg-letra { font-family: var(--fuente-display); font-weight: var(--peso-black); font-size: 34px; line-height: 1; color: var(--color-texto-primario); transition: color .15s; }
+  .pg-letra.pg-actual, .pg-punto { color: var(--color-marca); }
+  .pg-extremo .pg-letra { letter-spacing: -0.02em; }
+  .pg-extremo:first-child { align-items: flex-end; }
+  .pg-extremo:last-child { align-items: flex-start; }
+  .pg-num { min-width: 34px; min-height: 40px; padding: 0 6px; border: 0; background: transparent; color: var(--color-marca-texto); font-family: var(--fuente-texto); font-size: var(--texto-cuerpo); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+  .pg-num:hover { color: var(--color-texto-primario); }
+  .pg-num[aria-current] { color: var(--color-texto-primario); font-weight: var(--peso-bold); text-decoration: none; cursor: default; }
+  .pg-num:disabled { visibility: hidden; }
+  .pg-ant, .pg-sig { white-space: nowrap; font-weight: var(--peso-semibold); }
+  .dest-todo { text-align: center; margin: var(--esp-5) 0 0; font-weight: var(--peso-bold); }
+  @media (max-width: 640px) {
+    .pg-letra { font-size: 22px; }
+    .pg-num { min-width: 26px; padding: 0 2px; font-size: var(--texto-sm); }
+    .pg-ant, .pg-sig { font-size: 0; }
+    .pg-ant::before { content: '‹'; font-size: 22px; }
+    .pg-sig::before { content: '›'; font-size: 22px; }
+  }
 
   .cats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--esp-3); }
   .cat-card { display: flex; align-items: center; justify-content: space-between; padding: var(--esp-4) var(--esp-5); background: var(--superficie-card); border: 1px solid var(--borde-card); border-radius: var(--radio-md); color: var(--color-texto-primario); text-decoration: none; transition: border-color .12s, transform .12s; }
@@ -181,3 +229,31 @@ const totalProductos = stock.productos.length;
 
   @media (max-width: 640px) { .hero-titulo { font-size: 36px; } .hero { min-height: 68vh; } }
 </style>
+<script>
+  // Paginador de "Algunos repuestos del catálogo": muestra una página y marca su D en rojo
+  const nav = document.querySelector<HTMLElement>('.dest-paginador');
+  if (nav) {
+    const total = Number(nav.dataset.total);
+    const paginas = document.querySelectorAll<HTMLElement>('.dest-pagina');
+    const nums = nav.querySelectorAll<HTMLButtonElement>('.pg-num[data-ir]:not(.pg-ant):not(.pg-sig)');
+    const letras = nav.querySelectorAll<HTMLElement>('.pg-col:not(.pg-extremo) .pg-letra');
+    const ant = nav.querySelector<HTMLButtonElement>('.pg-ant')!;
+    const sig = nav.querySelector<HTMLButtonElement>('.pg-sig')!;
+    let actual = 1;
+    const ir = (n: number) => {
+      actual = Math.min(Math.max(n, 1), total);
+      paginas.forEach((p) => (p.hidden = Number(p.dataset.pagina) !== actual));
+      nums.forEach((b, i) => (i + 1 === actual ? b.setAttribute('aria-current', 'page') : b.removeAttribute('aria-current')));
+      letras.forEach((l, i) => l.classList.toggle('pg-actual', i + 1 === actual));
+      ant.disabled = actual === 1;
+      sig.disabled = actual === total;
+      document.querySelector('.destacados')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+    nav.addEventListener('click', (e) => {
+      const b = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-ir]');
+      if (!b || b.disabled) return;
+      const v = b.dataset.ir;
+      ir(v === 'ant' ? actual - 1 : v === 'sig' ? actual + 1 : Number(v));
+    });
+  }
+</script>

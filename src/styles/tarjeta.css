@@ -14,3 +14,6 @@
   .card-agregar:hover { border-color: var(--color-marca); }
   .card-cta { display: inline-flex; align-items: center; justify-content: center; width: 46px; min-height: 46px; flex-shrink: 0; color: var(--color-whatsapp-texto); background: var(--color-whatsapp); border-radius: var(--radio-md); text-decoration: none; transition: background .12s; }
   .card-cta:hover { background: var(--color-whatsapp-hover); text-decoration: none; }
+
+  .card-sku { margin-top: 4px; font-size: var(--texto-xs); color: var(--color-texto-terciario); font-variant-numeric: tabular-nums; }
+  .card-precio-consultar { font-size: var(--texto-cuerpo); font-weight: var(--peso-bold); }
