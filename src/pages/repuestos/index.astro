@@ -14,7 +14,7 @@ const total = productos.length.toLocaleString('es-AR');
     { titulo: 'Por tipo de repuesto', enlaces: categorias.map((c) => ({ label: c.label, url: `/repuestos/${c.id}/`, total: c.total })) },
     { titulo: 'Por marca de auto', enlaces: marcas.map((m) => ({ label: m.nombre, url: `/marcas/${m.slug}/`, total: m.total })) },
   ]}
-  tituloProductos="Algunos repuestos en stock"
+  tituloProductos="Algunos repuestos"
   productos={muestra(productos, 24, 'categoria')}
   verTodos={{ label: 'Ver el catálogo completo con buscador', url: '/catalogo/' }}
 />

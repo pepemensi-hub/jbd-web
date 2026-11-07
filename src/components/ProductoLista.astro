@@ -3,7 +3,6 @@
 // Usa los estilos globales de ProductCard; el ícono de WhatsApp sale de un <symbol id="ico-wa">
 // que define ListadoRepuestos una sola vez por página.
 import '../styles/tarjeta.css';
-import StockBadge from './StockBadge.astro';
 import negocio from '../data/negocio.json';
 import { linkWA } from '../lib/whatsapp.js';
 
@@ -19,7 +18,6 @@ const waUrl = linkWA({ whatsapp: negocio.whatsapp, repuesto: p.nombre, sku: p.sk
     {p.imagen && <img src={`https://lh3.googleusercontent.com/d/${p.imagen}=w400`} alt={p.nombre} loading="lazy" decoding="async" width="400" height="300" referrerpolicy="no-referrer" />}
   </div>
   <div class="card-body">
-    <div class="card-top"><StockBadge estado={p.estado} /></div>
     <div>
       <div class="card-marca">{compat}{p.fabricante ? ` · ${p.fabricante}` : ''}</div>
       <h3 class="card-nombre">{p.nombre}</h3>

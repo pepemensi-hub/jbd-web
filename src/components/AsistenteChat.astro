@@ -326,10 +326,9 @@ const config = { modelos, categorias, sintomas, urlCatalogo, whatsapp: negocio.w
       const compat = p.marca + (p.fab ? ' · ' + p.fab : '');
       const wa = 'https://wa.me/' + config.whatsapp + '?text=' + encodeURIComponent(mensajeConsulta(p.nombre + ' (cód. ' + p.sku + ')'));
       const c = contexto();
-      const estadoTxt = p.est === 'disponible' ? 'En stock' : 'A pedido';
       return '<div class="asis-prod">' +
         '<div class="asis-prod-img">' + (p.img ? '<img src="' + IMG + esc(p.img) + '=w200" alt="" loading="lazy" referrerpolicy="no-referrer">' : '') + '</div>' +
-        '<div class="asis-prod-info"><span class="asis-prod-estado asis-' + esc(p.est) + '">' + estadoTxt + '</span>' +
+        '<div class="asis-prod-info">' +
           '<span class="asis-prod-nombre">' + esc(p.nombre) + '</span>' +
           '<span class="asis-prod-acciones">' +
             '<button type="button" class="asis-prod-agregar" data-agregar data-sku="' + esc(p.sku) + '" data-nombre="' + esc(p.nombre) + '" data-compat="' + esc(compat) + '" data-precio="" data-auto="' + esc(c.auto) + '" data-problema="' + esc(c.problema) + '" data-perfil="' + esc(c.perfil) + '">Agregar</button>' +
@@ -444,8 +443,6 @@ const config = { modelos, categorias, sintomas, urlCatalogo, whatsapp: negocio.w
   .asis-prod-img { aspect-ratio: 4/3; background: #fff; }
   .asis-prod-img img { width: 100%; height: 100%; object-fit: contain; display: block; }
   .asis-prod-info { display: flex; flex-direction: column; gap: 6px; padding: 8px; flex: 1; }
-  .asis-prod-estado { font-size: 10px; font-weight: var(--peso-bold); text-transform: uppercase; letter-spacing: var(--tracking-label); color: var(--color-stock-disponible); }
-  .asis-prod-estado.asis-pedido { color: var(--color-stock-pedido); }
   .asis-prod-nombre { font-size: var(--texto-xs); line-height: 1.35; color: var(--color-texto-primario); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
   .asis-prod-acciones { display: flex; gap: 6px; margin-top: auto; }
   .asis-prod-agregar, .asis-prod-wa { flex: 1; min-height: 36px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; font-family: var(--fuente-texto); font-size: var(--texto-xs); font-weight: var(--peso-semibold); cursor: pointer; text-decoration: none; }

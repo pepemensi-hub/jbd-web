@@ -5,7 +5,6 @@ import Footer from '../components/Footer.astro';
 import Orientador from '../components/Orientador.astro';
 import ProductoLista from '../components/ProductoLista.astro';
 import IconoWASprite from '../components/IconoWASprite.astro';
-import StockBadge from '../components/StockBadge.astro';
 import negocio from '../data/negocio.json';
 import stock from '../data/stock.json';
 import { marcas } from '../lib/catalogo.js';
@@ -86,13 +85,9 @@ const totalProductos = stock.productos.length;
     <section class="destacados">
       <div class="dest-head">
         <h2>Algunos repuestos del catálogo</h2>
-        <p>Una muestra chica. Tenemos más de {totalProductos.toLocaleString('es-AR')} productos en stock.</p>
+        <p>Una muestra chica. Tenemos más de {totalProductos.toLocaleString('es-AR')} productos.</p>
       </div>
       <IconoWASprite />
-      <template id="tpl-dest-badges">
-        <span data-estado="disponible"><StockBadge estado="disponible" /></span>
-        <span data-estado="pedido"><StockBadge estado="pedido" /></span>
-      </template>
       <div class="dest-grid" id="dest-grid" data-wa={negocio.whatsapp} data-por-pagina={POR_PAGINA}>
         {destacados.map((p) => <ProductoLista p={p} />)}
       </div>
@@ -235,9 +230,6 @@ const totalProductos = stock.productos.length;
     const ant = nav.querySelector<HTMLButtonElement>('.pg-ant')!;
     const sig = nav.querySelector<HTMLButtonElement>('.pg-sig')!;
     const info = document.getElementById('pg-actual')!;
-    const tpl = document.getElementById('tpl-dest-badges') as HTMLTemplateElement;
-    const badge = (estado: string) =>
-      (tpl.content.querySelector(`[data-estado="${estado}"]`) || tpl.content.querySelector('[data-estado="disponible"]'))!.innerHTML;
     const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
 
     // Mismo orden que la página 1 del servidor
@@ -253,7 +245,6 @@ const totalProductos = stock.productos.length;
       return `<article class="card">
         <div class="card-img">${imagen ? `<img src="https://lh3.googleusercontent.com/d/${esc(imagen)}=w400" alt="${esc(nombre)}" loading="lazy" decoding="async" width="400" height="300" referrerpolicy="no-referrer">` : ''}</div>
         <div class="card-body">
-          <div class="card-top">${badge(estado)}</div>
           <div>
             <div class="card-marca">${esc(marca)}${fabricante ? ' · ' + esc(fabricante) : ''}</div>
             <h3 class="card-nombre">${esc(nombre)}</h3>

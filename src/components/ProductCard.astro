@@ -1,6 +1,5 @@
 ---
 import '../styles/tarjeta.css';
-import StockBadge from './StockBadge.astro';
 import negocio from '../data/negocio.json';
 import { linkWA } from '../lib/whatsapp.js';
 interface Props {
@@ -24,9 +23,6 @@ const precioAttr = precio == null ? '' : String(precio);
       : <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg>}
   </div>
   <div class="card-body">
-    <div class="card-top">
-      <StockBadge estado={estado} />
-    </div>
     <div>
       <div class="card-marca">{compat}</div>
       <h3 class="card-nombre">{nombre}</h3>

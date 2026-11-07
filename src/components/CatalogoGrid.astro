@@ -2,7 +2,6 @@
 // Los productos (~37.000 con foto) se cargan desde /catalogo.json y se dibujan en el cliente
 // de a tandas; las tarjetas replican el markup de ProductCard.astro (sus estilos son globales).
 import ProductCard from './ProductCard.astro';
-import StockBadge from './StockBadge.astro';
 import stock from '../data/stock.json';
 import negocio from '../data/negocio.json';
 
@@ -54,14 +53,6 @@ const catConProductos = categorias.filter(c => productos.some(p => p.categoria =
         {marcas.map(m => <button class="chip" data-val={m}>{m}</button>)}
       </div>
     </div>
-    <div class="filtro-grupo">
-      <h4>Disponibilidad</h4>
-      <div class="chips" data-filtro="estado">
-        <button class="chip activo" data-val="">Todas</button>
-        <button class="chip" data-val="disponible">En stock</button>
-        <button class="chip" data-val="pedido">A pedido</button>
-      </div>
-    </div>
   </aside>
 
   <div class="cat-resultados">
@@ -76,11 +67,6 @@ const catConProductos = categorias.filter(c => productos.some(p => p.categoria =
     <div class="cat-mas">
       <button type="button" class="cat-mas-btn" id="ver-mas" hidden>Ver más repuestos</button>
     </div>
-    <template id="tpl-badges">
-      <StockBadge estado="disponible" />
-      <StockBadge estado="pedido" />
-      <StockBadge estado="agotado" />
-    </template>
     <div class="cat-vacio" id="vacio" hidden>
       <p>No encontramos repuestos con esos filtros.</p>
       <p class="cat-vacio-sub">Probá con otra búsqueda o consultanos directamente.</p>
@@ -101,12 +87,7 @@ const catConProductos = categorias.filter(c => productos.some(p => p.categoria =
     const verMas = document.getElementById('ver-mas');
     const whatsapp = grid.dataset.wa;
 
-    // Badges (del template) e ícono de WhatsApp (de la primera tarjeta que renderizó Astro),
-    // para no duplicar su markup acá.
-    const badges = {};
-    document.getElementById('tpl-badges').content.querySelectorAll('.badge').forEach(function (b, i) {
-      badges[['disponible', 'pedido', 'agotado'][i]] = b.outerHTML;
-    });
+    // Ícono de WhatsApp (de la primera tarjeta que renderizó Astro), para no duplicar su markup acá.
     const primeraCta = grid.querySelector('.card-cta');
     const iconoWA = primeraCta ? primeraCta.innerHTML : 'WhatsApp';
 
@@ -131,7 +112,6 @@ const catConProductos = categorias.filter(c => productos.some(p => p.categoria =
       return '<div class="grid-item"><article class="' + (agotado ? 'card agotado' : 'card') + '">' +
         '<div class="card-img">' + img + '</div>' +
         '<div class="card-body">' +
-          '<div class="card-top">' + (badges[p.est] || badges.disponible) + '</div>' +
           '<div><div class="card-marca">' + esc(p.marca) + (p.fab ? ' · ' + esc(p.fab) : '') + '</div>' +
           '<h3 class="card-nombre">' + esc(p.nombre) + '</h3></div>' +
           '<div class="card-precio">Consultar</div>' +
