@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <!-- J mitad negra (arriba) y mitad roja (abajo), corte duro al medio -->
+    <linearGradient id="mitades" x1="0" y1="13" x2="0" y2="49.5" gradientUnits="userSpaceOnUse">
+      <stop offset="0.5" stop-color="#000000"/>
+      <stop offset="0.5" stop-color="#E4181F"/>
+    </linearGradient>
+  </defs>
+  <circle cx="32" cy="32" r="32" fill="#FFFFFF"/>
+  <path d="M26 13h18v24.5a12 12 0 0 1-24 0V34h8v3.5a4 4 0 0 0 8 0V20H26z" fill="url(#mitades)"/>
+</svg>
