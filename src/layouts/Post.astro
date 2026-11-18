@@ -14,9 +14,11 @@ interface Props {
   cluster: 'mantenimiento' | 'diagnostico' | 'local' | 'clasicos';
   faqs?: { pregunta: string; respuesta: string }[];
   relacionados?: { slug: string; titulo: string }[];
+  /** Imagen propia de la nota para compartir; si no hay, se usa la general */
+  imagen?: string;
 }
 
-const { slug, titulo, descripcion, fecha, actualizado, cluster, faqs = [], relacionados = [] } = Astro.props;
+const { slug, titulo, descripcion, fecha, actualizado, cluster, faqs = [], relacionados = [], imagen } = Astro.props;
 
 const CLUSTER_LABEL: Record<string, string> = {
   mantenimiento: 'Mantenimiento',
@@ -56,7 +58,7 @@ const schemaFAQ = faqs.length
 
 const mensajeWa = `Hola JBD, leí la nota "${titulo}" y quiero consultar por un repuesto.`;
 ---
-<Base titulo={`${titulo} | Blog JBD Repuestos`} descripcion={descripcion}>
+<Base titulo={`${titulo} | Blog JBD Repuestos`} descripcion={descripcion} tipo="article" imagen={imagen} imagenAlt={imagen ? titulo : undefined}>
   <Header />
   <script type="application/ld+json" set:html={JSON.stringify(schemaArticle)} />
   {schemaFAQ && <script type="application/ld+json" set:html={JSON.stringify(schemaFAQ)} />}

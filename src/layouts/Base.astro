@@ -21,31 +21,66 @@ interface Props {
   descripcion: string;
   /** Ruta canónica; por defecto la de la página actual */
   canonica?: string;
+  /** Imagen para compartir (ruta del sitio o URL absoluta); por defecto la general de JBD, 1200x630 */
+  imagen?: string;
+  imagenAlt?: string;
+  /** 'article' en las notas del blog */
+  tipo?: 'website' | 'article';
+  /** Páginas que no van a Google (por ejemplo la 404) */
+  noindex?: boolean;
 }
 
-const { titulo, descripcion, canonica } = Astro.props;
+const {
+  titulo,
+  descripcion,
+  canonica,
+  imagen = '/img/og-image.jpg',
+  imagenAlt = 'JBD Repuestos: repuestos para tu auto en Belén de Escobar',
+  tipo = 'website',
+  noindex = false,
+} = Astro.props;
 // Siempre apunta al dominio principal (sin www), aunque el sitio se sirva desde otro lado.
 const urlCanonica = new URL(canonica ?? Astro.url.pathname, Astro.site).href;
+const urlImagen = new URL(imagen, Astro.site).href;
+// Solo la imagen general tiene medidas conocidas; las de cada nota no se declaran.
+const imagenGeneral = imagen === '/img/og-image.jpg';
 // En el sitio de prueba (QA) se compila con PUBLIC_ENTORNO=qa: no se indexa en Google.
 const esQA = import.meta.env.PUBLIC_ENTORNO === 'qa';
+// Google Analytics 4: ID de medición de la propiedad de JBD. En QA no se carga, para no ensuciar las métricas.
+const GA_ID = 'G-LPN4DHZZ8R';
+const conAnalytics = GA_ID !== '' && !esQA;
+const gaConfig = `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');`;
 ---
 <!doctype html>
 <html lang="es-AR">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {conAnalytics && <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}></script>}
+    {conAnalytics && <script is:inline set:html={gaConfig}></script>}
     <link rel="preload" href={barlow400} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={archivo800} as="font" type="font/woff2" crossorigin />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{titulo}</title>
     <meta name="description" content={descripcion} />
-    {esQA && <meta name="robots" content="noindex, nofollow" />}
-    <link rel="canonical" href={urlCanonica} />
+    {esQA ? <meta name="robots" content="noindex, nofollow" /> : noindex && <meta name="robots" content="noindex, follow" />}
+    {!noindex && <link rel="canonical" href={urlCanonica} />}
+    <meta property="og:site_name" content="JBD Repuestos" />
     <meta property="og:url" content={urlCanonica} />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={tipo} />
     <meta property="og:title" content={titulo} />
     <meta property="og:description" content={descripcion} />
     <meta property="og:locale" content="es_AR" />
+    <meta property="og:image" content={urlImagen} />
+    {imagenGeneral && <meta property="og:image:type" content="image/jpeg" />}
+    {imagenGeneral && <meta property="og:image:width" content="1200" />}
+    {imagenGeneral && <meta property="og:image:height" content="630" />}
+    <meta property="og:image:alt" content={imagenAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={titulo} />
+    <meta name="twitter:description" content={descripcion} />
+    <meta name="twitter:image" content={urlImagen} />
+    <meta name="twitter:image:alt" content={imagenAlt} />
     <SchemaLocalBusiness />
     <slot name="head" />
   </head>

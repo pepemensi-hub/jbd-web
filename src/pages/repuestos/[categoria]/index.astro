@@ -11,11 +11,13 @@ const porMarca = marcas
   .map((m) => ({ ...m, total: lista.filter((p) => p.marca === m.nombre).length }))
   .filter((m) => m.total > 0);
 const total = lista.length.toLocaleString('es-AR');
-const ejemplos = muestra(lista, 3).map((p) => p.nombre.toLowerCase()).join(', ');
+// Meta description: los tipos de repuesto de la categoría; si no tiene (Otros), las marcas con más productos.
+const principales = [...porMarca].filter((m) => m.nombre !== 'Universal').sort((a, b) => b.total - a.total).slice(0, 3).map((m) => m.nombre);
+const resumen = c.resumen ?? `repuestos y accesorios para ${principales.join(', ')} y más`;
 ---
 <Listado
   titulo={`${c.label} para tu auto en Escobar | JBD Repuestos`}
-  descripcion={`${total} productos de ${c.label.toLowerCase()} en Belén de Escobar: ${ejemplos} y más. Consultá disponibilidad por WhatsApp.`}
+  descripcion={`${c.label} para tu auto en Belén de Escobar: ${resumen}. ${total} productos, consultá precio por WhatsApp.`}
   h1={`${c.label} para tu auto`}
   intro={`${c.intro} Tenemos ${total} productos de ${c.label.toLowerCase()} en JBD Repuestos, Belén de Escobar. Elegí la marca de tu auto para ver todo lo que hay.`}
   migas={[{ nombre: 'Inicio', url: '/' }, { nombre: 'Repuestos', url: '/repuestos/' }, { nombre: c.label, url: `/repuestos/${c.id}/` }]}

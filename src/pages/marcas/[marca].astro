@@ -17,7 +17,7 @@ const titulo = m.nombre === 'Universal' ? 'Repuestos universales' : `Repuestos $
 ---
 <Listado
   titulo={`${titulo} en Escobar | JBD Repuestos`}
-  descripcion={`${total} repuestos ${paraMarca(m.nombre)} en Belén de Escobar: ${tipos} y más. Consultá disponibilidad por WhatsApp.`}
+  descripcion={`${titulo} en Belén de Escobar: ${tipos} y más. ${total} productos, consultá precio por WhatsApp.`}
   h1={titulo}
   intro={`Tenemos ${total} repuestos ${paraMarca(m.nombre)} en JBD Repuestos, Belén de Escobar: ${tipos} y más. Elegí el tipo de repuesto para ver la lista completa.`}
   migas={[{ nombre: 'Inicio', url: '/' }, { nombre: 'Repuestos', url: '/repuestos/' }, { nombre: m.nombre, url: `/marcas/${m.slug}/` }]}

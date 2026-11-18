@@ -2,3 +2,6 @@
 RewriteEngine On
 RewriteCond %{HTTP_HOST} ^www\.jbdrespuestos\.com$ [NC]
 RewriteRule ^(.*)$ https://jbdrespuestos.com/$1 [R=301,L]
+
+# Página 404 propia (src/pages/404.astro): en castellano y con código 404
+ErrorDocument 404 /404.html

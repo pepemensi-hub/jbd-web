@@ -1,0 +1,60 @@
+---
+// Página de error 404 propia. Hostinger la sirve vía "ErrorDocument 404 /404.html" (public/.htaccess),
+// así se ve en castellano y el servidor sigue devolviendo el código 404.
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import WhatsAppButton from '../components/WhatsAppButton.astro';
+import { categorias } from '../lib/catalogo.js';
+---
+<Base
+  titulo="Página no encontrada | JBD Repuestos"
+  descripcion="La página que buscabas no existe o cambió de dirección. Buscá el repuesto en el catálogo de JBD Repuestos o consultanos por WhatsApp."
+  noindex
+>
+  <Header />
+  <main class="e404">
+    <p class="e404-codigo">Error 404</p>
+    <h1>No encontramos esta página</h1>
+    <p class="e404-texto">Puede que el link esté mal escrito o que la página haya cambiado de lugar. Buscá el repuesto en el catálogo o escribinos y te ayudamos.</p>
+
+    <form class="e404-buscador" action="/catalogo/" method="get" role="search">
+      <input type="search" name="q" placeholder="Buscá por nombre, marca, modelo o código…" aria-label="Buscar en el catálogo" autocomplete="off" />
+      <button type="submit">Buscar</button>
+    </form>
+
+    <div class="e404-acciones">
+      <a class="e404-btn" href="/catalogo/">Ver el catálogo</a>
+      <a class="e404-btn e404-btn-sec" href="/">Ir al inicio</a>
+      <WhatsAppButton texto="Consultar por WhatsApp" size="md" origen="404" mensaje="Hola JBD, estoy buscando un repuesto y no lo encontré en la web." />
+    </div>
+
+    <section class="e404-cats">
+      <h2>Repuestos por tipo</h2>
+      <div class="e404-links">
+        {categorias.map((c) => <a href={`/repuestos/${c.id}/`}>{c.label}</a>)}
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>
+<style>
+  .e404 { max-width: 760px; margin: 0 auto; padding: var(--esp-16) var(--esp-4); }
+  .e404-codigo { color: var(--color-marca-texto); font-weight: 600; letter-spacing: 2px; text-transform: uppercase; font-size: var(--texto-sm); margin: 0 0 var(--esp-2); }
+  .e404 h1 { font-size: var(--texto-display); margin: 0 0 var(--esp-4); line-height: 1.1; }
+  .e404-texto { color: var(--color-texto-secundario); font-size: var(--texto-cuerpo-lg); margin: 0 0 var(--esp-8); }
+  .e404-buscador { display: flex; gap: var(--esp-2); margin-bottom: var(--esp-6); }
+  .e404-buscador input { flex: 1; min-width: 0; padding: var(--esp-3) var(--esp-4); background: var(--superficie-input); color: var(--texto-cuerpo); border: 1px solid var(--color-borde-fuerte); border-radius: var(--radio-md); font: inherit; }
+  .e404-buscador input:focus { outline: 2px solid var(--color-marca); outline-offset: 1px; }
+  .e404-buscador button { padding: var(--esp-3) var(--esp-5); background: var(--color-marca); color: var(--color-texto-sobre-marca); border: 0; border-radius: var(--radio-md); font: inherit; font-weight: 600; cursor: pointer; }
+  .e404-buscador button:hover { background: var(--color-marca-hover); }
+  .e404-acciones { display: flex; flex-wrap: wrap; gap: var(--esp-3); align-items: center; margin-bottom: var(--esp-12); }
+  .e404-btn { display: inline-flex; align-items: center; padding: var(--esp-3) var(--esp-5); border-radius: var(--radio-md); background: var(--color-superficie-alta); color: var(--color-texto-primario); text-decoration: none; font-weight: 600; border: 1px solid var(--color-borde-fuerte); }
+  .e404-btn:hover { border-color: var(--color-marca); }
+  .e404-btn-sec { background: transparent; }
+  .e404-cats { padding-top: var(--esp-8); border-top: 1px solid var(--borde-card); }
+  .e404-cats h2 { font-size: var(--texto-h3); margin: 0 0 var(--esp-4); }
+  .e404-links { display: flex; flex-wrap: wrap; gap: var(--esp-2) var(--esp-5); }
+  .e404-links a { color: var(--color-texto-secundario); }
+  .e404-links a:hover { color: var(--color-marca-texto); }
+</style>
